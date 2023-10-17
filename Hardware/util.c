@@ -1,6 +1,6 @@
 int itoa(int value, char *sp, int radix)
 {
-    char tmp[16];// be careful with the length of the buffer
+    char tmp[16]; // be careful with the length of the buffer
     char *tp = tmp;
     int i;
     unsigned v;
@@ -16,9 +16,9 @@ int itoa(int value, char *sp, int radix)
         i = v % radix;
         v /= radix;
         if (i < 10)
-          *tp++ = i+'0';
+            *tp++ = i + '0';
         else
-          *tp++ = i + 'a' - 10;
+            *tp++ = i - 10 + 'a';
     }
 
     int len = tp - tmp;

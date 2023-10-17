@@ -8,15 +8,6 @@
  * \version     v0.1
  * \ingroup     demo
  *
- *              A8    -> RES, RESET
- *              A9    -> DC, A0
- *              A10   -> LED-A, Backlight
- *              B2    -> CSB, Chip Select
- *              B3    -> SCK, SCL, CLK, Clock
- *              B5    -> MOSI, SDA
- *              GND   -> GND
- *              3.3V  -> VCC
- * 
  * 
 ******************************************************************************/
 

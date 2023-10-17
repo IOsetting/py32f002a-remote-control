@@ -2,34 +2,48 @@
  * Demo: ST7567 LCD
  * 
  * PY32          ST7567
- * PA0   ------> Reset
- * PA1   ------> CLK/SCK
- * PA4   ------> Backlight
- * PA5   ------> DC/AO
- * PA6   ------> CSN/CE
- * PA7   ------> MOSI
+ * PB0   ------> Reset
+ * PF0   ------> CLK/SCK
+ * PB1   ------> DC/AO
+ * PB3   ------> CSN/CE
+ * PF2   ------> MOSI
  * 
- * PA2   ------> UART TX
  */
 #include <string.h>
 #include <stdio.h>
 #include "main.h"
 #include "py32f0xx_bsp_clock.h"
-//#include "SEGGER_RTT.h"
+#include "SEGGER_RTT.h"
 #include "st7567.h"
 #include "util.h"
 
 
 static void APP_SPIConfig(void);
+static void APP_FlashSetOptionBytes(void);
 
 int main(void)
 {
   int y1, y2;
   uint8_t d1, d2;
 
-  BSP_RCC_HSI_24MConfig();
+  BSP_RCC_HSI_8MConfig();
 
-  //SEGGER_RTT_printf(0, "SPI Demo: ST7567 LCD\r\nClock: %ld\r\n", SystemCoreClock);
+  SEGGER_RTT_printf(0, "SPI Demo: ST7567 LCD\r\nClock: %ld\r\n", SystemCoreClock);
+
+  /** 
+   * Important: 
+   * delay 2 seconds before SWD port stop working, so you will have 
+   * enougth time to re-flash the MCU
+  */
+  LL_mDelay(2000);
+
+  /* Check if PF0/PF2 pin has been set as GPIO pin*/
+  if(READ_BIT(FLASH->OPTR, FLASH_OPTR_NRST_MODE) == OB_RESET_MODE_RESET)
+  {
+    SEGGER_RTT_WriteString(0, "Write option bytes\r\n");
+    /* If not, turn off the RESET function on pin(PF0/PF2), this will reset the MCU */
+    APP_FlashSetOptionBytes();
+  }
 
   APP_SPIConfig();
 
@@ -208,18 +222,18 @@ uint8_t SPI_TxRxByte(uint8_t data)
 {
   uint8_t SPITimeout = 0xFF;
   /* Check the status of Transmit buffer Empty flag */
-  while (READ_BIT(SPI1->SR, SPI_SR_TXE) == RESET)
+  while (READ_BIT(SPI2->SR, SPI_SR_TXE) == RESET)
   {
     if (SPITimeout-- == 0) return 0;
   }
-  LL_SPI_TransmitData8(SPI1, data);
+  LL_SPI_TransmitData8(SPI2, data);
   SPITimeout = 0xFF;
-  while (READ_BIT(SPI1->SR, SPI_SR_RXNE) == RESET)
+  while (READ_BIT(SPI2->SR, SPI_SR_RXNE) == RESET)
   {
     if (SPITimeout-- == 0) return 0;
   }
   // Read from RX buffer
-  return LL_SPI_ReceiveData8(SPI1);
+  return LL_SPI_ReceiveData8(SPI2);
 }
 
 static void APP_SPIConfig(void)
@@ -227,31 +241,28 @@ static void APP_SPIConfig(void)
   LL_SPI_InitTypeDef SPI_InitStruct = {0};
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SPI1);
-  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA | LL_IOP_GRP1_PERIPH_GPIOB);
+  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI2);
+  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA | LL_IOP_GRP1_PERIPH_GPIOB | LL_IOP_GRP1_PERIPH_GPIOF);
+  // PB0 RESET
+  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_0, LL_GPIO_MODE_OUTPUT);
+  // PB1 DC/AO
+  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_OUTPUT);
+  // PB3 CSN
+  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_3, LL_GPIO_MODE_OUTPUT);
 
-  // PA6 CS
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
-  // PA5 DC/AO
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_5, LL_GPIO_MODE_OUTPUT);
-  // PA0 RESET
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_0, LL_GPIO_MODE_OUTPUT);
-  // PA4   ------> Backlight
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_4, LL_GPIO_MODE_OUTPUT);
-
-  // PA1 SCK
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
+  // PF0 AF3 = SPI2 SCK
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-  // PA7 MOSI
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_7;
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_3;
+  LL_GPIO_Init(GPIOF, &GPIO_InitStruct);
+  // PF2 AF3 = SPI2 MOSI
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_2;
   GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_InitStruct.Alternate = LL_GPIO_AF_3;
+  LL_GPIO_Init(GPIOF, &GPIO_InitStruct);
 
   SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
   SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
@@ -259,10 +270,31 @@ static void APP_SPIConfig(void)
   SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
   SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
   SPI_InitStruct.NSS = LL_SPI_NSS_SOFT;
-  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV64;
+  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV256;
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
-  LL_SPI_Init(SPI1, &SPI_InitStruct);
-  LL_SPI_Enable(SPI1);
+  LL_SPI_Init(SPI2, &SPI_InitStruct);
+  LL_SPI_Enable(SPI2);
+}
+
+static void APP_FlashSetOptionBytes(void)
+{
+  FLASH_OBProgramInitTypeDef OBInitCfg;
+
+  LL_FLASH_Unlock();
+  LL_FLASH_OB_Unlock();
+
+  OBInitCfg.OptionType = OPTIONBYTE_USER;
+  OBInitCfg.USERType = OB_USER_BOR_EN | OB_USER_BOR_LEV | OB_USER_IWDG_SW | OB_USER_WWDG_SW | OB_USER_NRST_MODE | OB_USER_nBOOT1;
+  /*
+   * The default value: OB_BOR_DISABLE | OB_BOR_LEVEL_3p1_3p2 | OB_IWDG_SW | OB_WWDG_SW | OB_RESET_MODE_RESET | OB_BOOT1_SYSTEM;
+  */
+  OBInitCfg.USERConfig = OB_BOR_DISABLE | OB_BOR_LEVEL_3p1_3p2 | OB_IWDG_SW | OB_WWDG_SW | OB_RESET_MODE_GPIO | OB_BOOT1_SYSTEM;
+  LL_FLASH_OBProgram(&OBInitCfg);
+
+  LL_FLASH_Lock();
+  LL_FLASH_OB_Lock();
+  /* Reload option bytes */
+  LL_FLASH_OB_Launch();
 }
 
 void APP_ErrorHandler(void)

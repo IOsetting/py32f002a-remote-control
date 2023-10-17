@@ -10,6 +10,7 @@ extern "C" {
 #include "py32f0xx_ll_dma.h"
 #include "py32f0xx_ll_exti.h"
 #include "py32f0xx_ll_gpio.h"
+#include "py32f0xx_ll_flash.h"
 #include "py32f0xx_ll_pwr.h"
 #include "py32f0xx_ll_rcc.h"
 #include "py32f0xx_ll_spi.h"
