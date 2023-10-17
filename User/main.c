@@ -26,7 +26,7 @@ int main(void)
   int y1, y2;
   uint8_t d1, d2;
 
-  BSP_RCC_HSI_8MConfig();
+  BSP_RCC_HSI_PLL48MConfig();
 
   SEGGER_RTT_printf(0, "SPI Demo: ST7567 LCD\r\nClock: %ld\r\n", SystemCoreClock);
 
@@ -270,7 +270,7 @@ static void APP_SPIConfig(void)
   SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
   SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
   SPI_InitStruct.NSS = LL_SPI_NSS_SOFT;
-  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV256;
+  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV16;
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
   LL_SPI_Init(SPI2, &SPI_InitStruct);
   LL_SPI_Enable(SPI2);
