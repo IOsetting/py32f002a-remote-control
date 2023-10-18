@@ -20,6 +20,8 @@ extern "C" {
 void MSP_GPIO_Init(void);
 void MSP_SPI_Init(void);
 
+void MSP_FlashSetOptionBytes(void);
+
 
 #ifdef __cplusplus
 }
