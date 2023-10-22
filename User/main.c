@@ -17,6 +17,7 @@
 #include "SEGGER_RTT.h"
 #include "st7567.h"
 #include "xl2400.h"
+#include "74hc165.h"
 #include "util.h"
 
 // 0:RX, 1:TX, 2:TX_FAST
@@ -91,12 +92,6 @@ int main(void)
   y1 = 0, y2 = 0, d1 = 0, d2 = 0;
   while(1)
   {
-    if (XL2400_SPI_Test() == ERROR)
-    {
-      SEGGER_RTT_WriteString(0, " - check failed\r\n");
-    }
-    SEGGER_RTT_WriteString(0, " - check passed\r\n");
-    LL_GPIO_TogglePin(GPIOB, LL_GPIO_PIN_6);
     for (loop = 0; loop < 0x08; loop++)
     {
       ST7567_GotoXY(y1+10, y2+17);
@@ -130,6 +125,9 @@ int main(void)
       y1--;
       if (y1 == 0) d1 = 0;
     }
+
+    // Read from 74HC165
+    SEGGER_RTT_printf(0, "%02X\r\n", HC165_Read());
   }
 }
 

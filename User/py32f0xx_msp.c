@@ -1,5 +1,20 @@
 /**
  * MCU Support Package
+ * 
+ * PY32F002A Pinout
+ * 
+ *               ___________
+ * GND          -| 1    20 |- VCC
+ * PA13         -| 2    19 |- PB1
+ * PA14         -| 3    18 |- PB2
+ * PB3          -| 4    17 |- PB0
+ * PB6/PF4/BOOT0-| 5    16 |- PA7
+ * PA6          -| 6    15 |- PA4
+ * PA5          -| 7    14 |- PA3
+ * PF0          -| 8    13 |- PA2
+ * PF1          -| 9    12 |- PA1
+ * PF2/RST      -| 10   11 |- PA0
+ *               -----------
 */
 #include "py32f0xx_msp.h"
 
@@ -7,18 +22,22 @@ void MSP_GPIO_Init(void)
 {
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
   LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA | LL_IOP_GRP1_PERIPH_GPIOB | LL_IOP_GRP1_PERIPH_GPIOF);
-  // PB0 RESET
+  // PB0 RESET(ST7567)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_0, LL_GPIO_MODE_OUTPUT);
-  // PB1 DC/AO
+  // PB1 DC/AO(ST7567)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_OUTPUT);
   // PB2 CSN(XL2400)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_2, LL_GPIO_MODE_OUTPUT);
   // PB3 CSN(ST7567)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_3, LL_GPIO_MODE_OUTPUT);
-  // PF4 Analog
+  // PF4 Analog(Inhibit PF4 for PB6)
   LL_GPIO_SetPinMode(GPIOF, LL_GPIO_PIN_4, LL_GPIO_MODE_ANALOG);
-  // PB6 SH/LD
+  // PA6 CLK(74HC165)
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
+  // PB6 SH/LD(74HC165)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
+  // PA7 QH(74HC165)
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_7, LL_GPIO_MODE_INPUT);
 
   // PF0 AF3 = SPI2 SCK
   GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
