@@ -140,6 +140,6 @@ uint8_t XL2400_ReadStatus(void);
 void XL2400_ClearStatus(void);
 void XL2400_FlushRxTX(void);
 void XL2400_CarrierTest(void);
-uint8_t XL2400_PrintStatus(void);
+void XL2400_PrintStatus(void);
 
 #endif

@@ -326,10 +326,11 @@ void XL2400_CarrierTest(void)
     XL2400_ClearStatus();
 }
 
-uint8_t XL2400_PrintStatus(void)
+void XL2400_PrintStatus(void)
 {
-    uint8_t i, status;
     /*
+    uint8_t i, status;
+    
     printf("Bytes from low to high: 0,1,2,3,...\r\n[Config]");
     XL2400_ReadToBuf(XL2400_CMD_R_REGISTER | XL2400_REG_CFG_TOP, xbuf, 3);
     for (i = 0; i < 3; i++) {
@@ -417,5 +418,4 @@ uint8_t XL2400_PrintStatus(void)
     printf("\r\n[Status]");
     printf("%02X", status);
     printf("\r\n\r\n");*/
-    return status;
 }
