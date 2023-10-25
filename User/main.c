@@ -20,8 +20,8 @@
 #include "74hc165.h"
 #include "util.h"
 
-// 0:RX, 1:TX, 2:TX_FAST
-#define XL2400_MODE 0
+// 0:Control, 1:Driver
+#define PAD_MODE 0
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};

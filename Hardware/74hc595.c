@@ -12,25 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "74hc165.h"
+#include "74hc595.h"
 
-uint8_t HC165_Read(void)
+
+void HC595_Write(uint8_t *data, uint8_t size)
 {
-    uint8_t i, data = 0;
+    uint8_t i;
 
-    HC165_LD_LOW();  // Pull down LD to load parallel inputs
-    HC165_LD_HIGH(); // Pull up to inhibit parallel loading
-
-    for (i = 0; i < 8; i++)
+    HC595_STCP_LOW();
+    while(size--)
     {
-        data = data << 1;
-        HC165_SCK_LOW();
-        HC165_NOP(); // NOP to ensure reading correct value
-        if (HC165_DATA_READ())
+        i = 8;
+        // iterate through the bits in each byte
+        while(i--)
         {
-            data |= 0x01;
+            HC595_SRCLK_LOW();
+            if (*(data + size) & (1 << i))
+            {
+                HC595_DS_HIGH();
+            }
+            else
+            {
+                HC595_DS_LOW();
+            }
+            HC595_NOP();
+            HC595_SRCLK_HIGH();
+            HC595_NOP();
         }
-        HC165_SCK_HIGH();
     }
-    return data;
+    HC595_NOP();
+    HC595_STCP_HIGH();
 }

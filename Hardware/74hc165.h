@@ -1,4 +1,4 @@
-// Copyright 2021 IOsetting <iosetting(at)outlook.com>
+// Copyright 2023 IOsetting <iosetting(at)outlook.com>
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@
 #define HC165_SCK_HIGH()        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
 // A7
 #define HC165_DATA_READ()       LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_7)
+
+#define HC165_NOP()             __NOP()
 
 uint8_t HC165_Read(void);
 
