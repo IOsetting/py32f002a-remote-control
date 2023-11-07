@@ -13,7 +13,7 @@
 #ifndef __ST7567_H_
 #define __ST7567_H_
 
-#include "main.h"
+#include "bsp_base.h"
 #include "ascii_fonts.h"
 
 #define ST7567_BUF_SIZE         1024

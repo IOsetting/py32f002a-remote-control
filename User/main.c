@@ -1,24 +1,12 @@
-/***
- * Demo: ST7567 LCD
- * 
- * PY32          ST7567
- * PB0   ------> Reset
- * PF0   ------> CLK/SCK
- * PB1   ------> DC/AO
- * PB3   ------> CSN/CE
- * PF2   ------> MOSI
- * 
- */
 #include <string.h>
 #include <stdio.h>
 #include "main.h"
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "SEGGER_RTT.h"
-#include "st7567.h"
+#include "bsp_display.h"
 #include "xl2400.h"
 #include "74hc165.h"
-#include "util.h"
 
 // 0:Control, 1:Driver
 #define PAD_MODE 0
@@ -34,10 +22,6 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
 {
-  int y1, y2;
-  uint8_t d1, d2;
-  uint32_t loop;
-
   BSP_RCC_HSI_PLL48MConfig();
 
   SEGGER_RTT_printf(0, "SPI Demo: ST7567 LCD\r\nClock: %ld\r\n", SystemCoreClock);
@@ -71,83 +55,19 @@ int main(void)
   XL2400_Init();
   XL2400_SetPower(XL2400_RF_0DB);
 
-  ST7567_Init();
-
-  ST7567_Fill(0);
-  LL_mDelay(2000);
-
-  ST7567_DrawLine(0,   0, 127,  0, 1);
-  ST7567_DrawLine(0,   0,   0, 63, 1);
-  ST7567_DrawLine(127, 0, 127, 63, 1);
-  ST7567_DrawLine(0,  63, 127, 63, 1);
-
-  ST7567_GotoXY(5, 5);
-  ST7567_Puts("LCD:ST7567", &Font_12x24, 1);
-  ST7567_GotoXY(10, 42);
-  ST7567_Puts("Font size: 12x24", &Font_6x8, 1);
-  ST7567_UpdateScreen(); // display
+  BSP_Display_Init();
   LL_mDelay(2000);
 
   /* Infinite loop */
-  y1 = 0, y2 = 0, d1 = 0, d2 = 0;
   while(1)
   {
-    for (loop = 0; loop < 0x08; loop++)
-    {
-      ST7567_GotoXY(y1+10, y2+17);
-      ST7567_Puts("ST7567", &Font_6x8, 1);
-      ST7567_GotoXY(y1+20, y2+33);
-      ST7567_Puts("IOsetting", &Font_6x8, 1);
-      ST7567_UpdateScreen();
-      ST7567_Fill(0);
-    }
-    LL_mDelay(100);
-    if (d1 == 0)
-    {
-      y1++;
-      if (y1 == 54)
-      {
-        d1 = 1;
-        if (d2 == 0)
-        {
-          y2 += 4;
-          if (y2 == 20) d2 = 1;
-        }
-        else
-        {
-          y2 -= 4;
-          if (y2 == 0) d2 = 0;
-        }
-      }
-    }
-    else
-    {
-      y1--;
-      if (y1 == 0) d1 = 0;
-    }
+    BSP_Display_Loop();
 
     // Read from 74HC165
     SEGGER_RTT_printf(0, "%02X\r\n", HC165_Read());
   }
 }
 
-uint8_t SPI_TxRxByte(uint8_t data)
-{
-  uint8_t SPITimeout = 0xFF;
-  /* Check the status of Transmit buffer Empty flag */
-  while (READ_BIT(SPI2->SR, SPI_SR_TXE) == RESET)
-  {
-    if (SPITimeout-- == 0) return 0;
-  }
-  LL_SPI_TransmitData8(SPI2, data);
-  SPITimeout = 0xFF;
-  while (READ_BIT(SPI2->SR, SPI_SR_RXNE) == RESET)
-  {
-    if (SPITimeout-- == 0) return 0;
-  }
-  // Read from RX buffer
-  return LL_SPI_ReceiveData8(SPI2);
-}
 
 void APP_ErrorHandler(void)
 {

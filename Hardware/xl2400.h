@@ -15,7 +15,7 @@
 #ifndef __FW_XL2400_H__
 #define __FW_XL2400_H__
 
-#include "main.h"
+#include "bsp_base.h"
 #include "string.h"
 
 #define XL2400_PLOAD_WIDTH       32   // Payload width

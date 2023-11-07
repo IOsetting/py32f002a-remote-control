@@ -4,17 +4,40 @@
  * PY32F002A Pinout
  * 
  *               ___________
- * GND          -| 1    20 |- VCC
- * PA13         -| 2    19 |- PB1
- * PA14         -| 3    18 |- PB2
- * PB3          -| 4    17 |- PB0
+ *          GND -| 1    20 |- VCC
+ *         PA13 -| 2    19 |- PB1
+ *         PA14 -| 3    18 |- PB2
+ *          PB3 -| 4    17 |- PB0
  * PB6/PF4/BOOT0-| 5    16 |- PA7
- * PA6          -| 6    15 |- PA4
- * PA5          -| 7    14 |- PA3
- * PF0          -| 8    13 |- PA2
- * PF1          -| 9    12 |- PA1
- * PF2/RST      -| 10   11 |- PA0
+ *          PA6 -| 6    15 |- PA4
+ *          PA5 -| 7    14 |- PA3
+ *          PF0 -| 8    13 |- PA2
+ *          PF1 -| 9    12 |- PA1
+ *      PF2/RST -| 10   11 |- PA0
  *               -----------
+ * 
+ * 
+ * |         |       |           | ST7567 | XL2400 | joystick_01 | joystick_02 | potentiometer_01 | potentiometer_02 | 74HC165   |    |  
+ * | ---     | ---   | ---       | ---    | ---    | ---         | ---         | ---              | ---              | ----      | -- | 
+ * | PA0     |       |           |        |        |   X         |             |                  |                  |           |    |   
+ * | PA1     |       |           |        |        |   x         |             |                  |                  |           |    |   
+ * | PA2     |       |           |        |        |             |  X          |                  |                  |           |    |   
+ * | PA3     |       |           |        |        |             |  X          |                  |                  |           |    | 
+ * | PA4     |       |           |        |        |             |             | X                |                  |           |    |
+ * | PA5     |       |           |        |        |             |             |                  | X                |           |    |
+ * | PA6     |       |           |        |        |             |             |                  |                  | CLK       |    |
+ * | PA7     |       |           |        |        |             |             |                  |                  | QH        |    |
+ * | PA13    | SWD   |           |        |        |             |             |                  |                  |           |    |
+ * | PA14    | SWC   |           |        |        |             |             |                  |                  |           |    |
+ * | PB0     |       |           | RESET  |        |             |             |                  |                  |           |    |
+ * | PB1     |       |           | DC/AO  |        |             |             |                  |                  |           |    |
+ * | PB2     |       |           |        |   CSN  |             |             |                  |                  |           |    |
+ * | PB3     |       |           | CSN/CE |        |             |             |                  |                  |           |    |
+ * | PF0     |       | SPI2_SCK  | SCK    |   SCK  |             |             |                  |                  |           |    |
+ * | PF1     |       | SPI2_MISO |        |   DATA |             |             |                  |                  |           |    |
+ * | PF2     | NRST  | SPI2_MOSI | MOSI   |   DATA |             |             |                  |                  |           |    |
+ * | PF4/PB6 | BOOT0 |           |        |        |             |             |                  |                  | SH/LD     |    |
+ * 
 */
 #include "py32f0xx_msp.h"
 
