@@ -80,8 +80,13 @@ extern "C" {
 void MSP_GPIO_Init(void);
 void MSP_SPI_Init(void);
 
+void MSP_DMA_Config(void);
+void MSP_ADC_Init(void);
+void MSP_TIM1_Init(void);
+
 void MSP_FlashSetOptionBytes(void);
 uint8_t SPI_TxRxByte(uint8_t data);
+
 
 #ifdef __cplusplus
 }

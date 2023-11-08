@@ -5,6 +5,7 @@
 extern "C" {
 #endif
 
+#include "py32f0xx_ll_adc.h"
 #include "py32f0xx_ll_bus.h"
 #include "py32f0xx_ll_cortex.h"
 #include "py32f0xx_ll_dma.h"

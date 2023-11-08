@@ -11,6 +11,8 @@
 // 0:Control, 1:Driver
 #define PAD_MODE 0
 
+__IO uint16_t adc_dma_data[6];
+
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
 uint8_t tmp[] = {
@@ -45,6 +47,10 @@ int main(void)
   MSP_GPIO_Init();
   MSP_SPI_Init();
 
+  MSP_DMA_Config();
+  MSP_ADC_Init();
+  MSP_TIM1_Init();
+
   while (XL2400_SPI_Test() == ERROR)
   {
     SEGGER_RTT_WriteString(0, " - check failed\r\n");
@@ -68,6 +74,19 @@ int main(void)
   }
 }
 
+void DMA1_Channel1_IRQHandler(void)
+{
+  if (LL_DMA_IsActiveFlag_TC1(DMA1) == 1)
+  {
+    LL_DMA_ClearFlag_TC1(DMA1);
+    SEGGER_RTT_WriteString(0, "Read value:");
+    for (uint8_t i = 0; i < 6; i++)
+    {
+      SEGGER_RTT_printf(0, " %d", *(adc_dma_data + i));
+    }
+    SEGGER_RTT_WriteString(0, "\r\n");
+  }
+}
 
 void APP_ErrorHandler(void)
 {

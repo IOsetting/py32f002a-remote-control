@@ -17,26 +17,26 @@
  *               -----------
  * 
  * 
- * |         |       |           | ST7567 | XL2400 | joystick_01 | joystick_02 | potentiometer_01 | potentiometer_02 | 74HC165   |    |  
- * | ---     | ---   | ---       | ---    | ---    | ---         | ---         | ---              | ---              | ----      | -- | 
- * | PA0     |       |           |        |        |   X         |             |                  |                  |           |    |   
- * | PA1     |       |           |        |        |   x         |             |                  |                  |           |    |   
- * | PA2     |       |           |        |        |             |  X          |                  |                  |           |    |   
- * | PA3     |       |           |        |        |             |  X          |                  |                  |           |    | 
- * | PA4     |       |           |        |        |             |             | X                |                  |           |    |
- * | PA5     |       |           |        |        |             |             |                  | X                |           |    |
- * | PA6     |       |           |        |        |             |             |                  |                  | CLK       |    |
- * | PA7     |       |           |        |        |             |             |                  |                  | QH        |    |
- * | PA13    | SWD   |           |        |        |             |             |                  |                  |           |    |
- * | PA14    | SWC   |           |        |        |             |             |                  |                  |           |    |
- * | PB0     |       |           | RESET  |        |             |             |                  |                  |           |    |
- * | PB1     |       |           | DC/AO  |        |             |             |                  |                  |           |    |
- * | PB2     |       |           |        |   CSN  |             |             |                  |                  |           |    |
- * | PB3     |       |           | CSN/CE |        |             |             |                  |                  |           |    |
- * | PF0     |       | SPI2_SCK  | SCK    |   SCK  |             |             |                  |                  |           |    |
- * | PF1     |       | SPI2_MISO |        |   DATA |             |             |                  |                  |           |    |
- * | PF2     | NRST  | SPI2_MOSI | MOSI   |   DATA |             |             |                  |                  |           |    |
- * | PF4/PB6 | BOOT0 |           |        |        |             |             |                  |                  | SH/LD     |    |
+ * |         |       |           | ST7567 | XL2400 | joystick_01 | joystick_02 | ptmeter_01 | ptmeter_02 | 74HC165   |    |  
+ * | ---     | ---   | ---       | ---    | ---    | ---         | ---         | ---        | ---        | ----      | -- | 
+ * | PA0     |       |           |        |        |   X         |             |            |            |           |    |   
+ * | PA1     |       |           |        |        |   x         |             |            |            |           |    |   
+ * | PA2     |       |           |        |        |             |  X          |            |            |           |    |   
+ * | PA3     |       |           |        |        |             |  X          |            |            |           |    | 
+ * | PA4     |       |           |        |        |             |             | X          |            |           |    |
+ * | PA5     |       |           |        |        |             |             |            | X          |           |    |
+ * | PA6     |       |           |        |        |             |             |            |            | CLK       |    |
+ * | PA7     |       |           |        |        |             |             |            |            | QH        |    |
+ * | PA13    | SWD   |           |        |        |             |             |            |            |           |    |
+ * | PA14    | SWC   |           |        |        |             |             |            |            |           |    |
+ * | PB0     |       |           | RESET  |        |             |             |            |            |           |    |
+ * | PB1     |       |           | DC/AO  |        |             |             |            |            |           |    |
+ * | PB2     |       |           |        |   CSN  |             |             |            |            |           |    |
+ * | PB3     |       |           | CSN/CE |        |             |             |            |            |           |    |
+ * | PF0     |       | SPI2_SCK  | SCK    |   SCK  |             |             |            |            |           |    |
+ * | PF1     |       | SPI2_MISO |        |   DATA |             |             |            |            |           |    |
+ * | PF2     | NRST  | SPI2_MOSI | MOSI   |   DATA |             |             |            |            |           |    |
+ * | PF4/PB6 | BOOT0 |           |        |        |             |             |            |            | SH/LD     |    |
  * 
  * 
  * |         |       |           | XL2400 |     PWM     | 74HC595    |        |  
@@ -63,6 +63,8 @@
  * 
 */
 #include "py32f0xx_msp.h"
+
+extern __IO uint16_t adc_dma_data[6];
 
 void MSP_GPIO_Init(void)
 {
@@ -121,6 +123,106 @@ void MSP_SPI_Init(void)
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
   LL_SPI_Init(SPI2, &SPI_InitStruct);
   LL_SPI_Enable(SPI2);
+}
+
+void MSP_DMA_Config(void)
+{
+  LL_AHB1_GRP1_EnableClock(LL_AHB1_GRP1_PERIPH_DMA1);
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_SYSCFG);
+
+  // Remap ADC to LL_DMA_CHANNEL_1
+  LL_SYSCFG_SetDMARemap_CH1(LL_SYSCFG_DMA_MAP_ADC);
+  // Transfer from peripheral to memory
+  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+  // Set priority
+  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
+  // Circular mode
+  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_CIRCULAR);
+  // Peripheral address no increment
+  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
+  // Memory address increment
+  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
+  // Peripheral data alignment : 16bit
+  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_HALFWORD);
+  // Memory data alignment : 16bit
+  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_HALFWORD);
+  // Data length
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, 6);
+  // Sorce and target address
+  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, (uint32_t)&ADC1->DR, (uint32_t)adc_dma_data, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  // Enable DMA channel 1
+  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+  // Enable transfer-complete interrupt
+  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+
+  NVIC_SetPriority(DMA1_Channel1_IRQn, 0);
+  NVIC_EnableIRQ(DMA1_Channel1_IRQn);
+}
+
+void MSP_ADC_Init(void)
+{
+  __IO uint32_t backup_setting_adc_dma_transfer = 0;
+
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_ADC1);
+
+  LL_ADC_Reset(ADC1);
+  // Calibrate start
+  if (LL_ADC_IsEnabled(ADC1) == 0)
+  {
+    /* Backup current settings */
+    backup_setting_adc_dma_transfer = LL_ADC_REG_GetDMATransfer(ADC1);
+    /* Turn off DMA when calibrating */
+    LL_ADC_REG_SetDMATransfer(ADC1, LL_ADC_REG_DMA_TRANSFER_NONE);
+    LL_ADC_StartCalibration(ADC1);
+
+    while (LL_ADC_IsCalibrationOnGoing(ADC1) != 0);
+
+    /* Delay 1ms(>= 4 ADC clocks) before re-enable ADC */
+    LL_mDelay(1);
+    /* Apply saved settings */
+    LL_ADC_REG_SetDMATransfer(ADC1, backup_setting_adc_dma_transfer);
+  }
+  // Calibrate end
+
+  /* PA0 ~ PA5 as ADC input */
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_0|LL_GPIO_PIN_1|LL_GPIO_PIN_2|LL_GPIO_PIN_3|LL_GPIO_PIN_4| LL_GPIO_PIN_5, LL_GPIO_MODE_ANALOG);
+  /* Set ADC channel and clock source when ADEN=0, set other configurations when ADSTART=0 */
+  LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(ADC1), LL_ADC_PATH_INTERNAL_NONE);
+
+  LL_ADC_SetClock(ADC1, LL_ADC_CLOCK_SYNC_PCLK_DIV2);
+  LL_ADC_SetResolution(ADC1, LL_ADC_RESOLUTION_12B);
+  LL_ADC_SetResolution(ADC1, LL_ADC_DATA_ALIGN_RIGHT);
+  LL_ADC_SetLowPowerMode(ADC1, LL_ADC_LP_MODE_NONE);
+  LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_41CYCLES_5);
+
+  /* Set TIM1 as trigger source */
+  LL_ADC_REG_SetTriggerSource(ADC1, LL_ADC_REG_TRIG_EXT_TIM1_TRGO);
+  LL_ADC_REG_SetTriggerEdge(ADC1, LL_ADC_REG_TRIG_EXT_RISING);
+  /* Single conversion mode (CONT = 0, DISCEN = 0), performs a single sequence of conversions, converting all the channels once */
+  LL_ADC_REG_SetContinuousMode(ADC1, LL_ADC_REG_CONV_SINGLE);
+
+  LL_ADC_REG_SetDMATransfer(ADC1, LL_ADC_REG_DMA_TRANSFER_UNLIMITED);
+  LL_ADC_REG_SetOverrun(ADC1, LL_ADC_REG_OVR_DATA_OVERWRITTEN);
+  /* Enable: each conversions in the sequence need to be triggerred separately */
+  LL_ADC_REG_SetSequencerDiscont(ADC1, LL_ADC_REG_SEQ_DISCONT_DISABLE);
+  /* Set channel 0/1/2/3/4/5 */
+  LL_ADC_REG_SetSequencerChannels(ADC1, LL_ADC_CHANNEL_0 | LL_ADC_CHANNEL_1 | LL_ADC_CHANNEL_2 | LL_ADC_CHANNEL_3 | LL_ADC_CHANNEL_4 | LL_ADC_CHANNEL_5);
+
+  LL_ADC_Enable(ADC1);
+
+  // Start ADC regular conversion
+  LL_ADC_REG_StartConversion(ADC1);
+}
+
+void MSP_TIM1_Init(void)
+{
+  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM1);
+  LL_TIM_SetPrescaler(TIM1, (SystemCoreClock / 6000) - 1);
+  LL_TIM_SetAutoReload(TIM1, 6000 - 1);
+  /* Triggered by update */
+  LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_UPDATE);
+
+  LL_TIM_EnableCounter(TIM1);
 }
 
 void MSP_FlashSetOptionBytes(void)
