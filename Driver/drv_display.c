@@ -1,3 +1,4 @@
+#include "drv_display.h"
 #include "st7567.h"
 
 static int y1 = 0, y2 = 0;

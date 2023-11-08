@@ -15,13 +15,18 @@
 #ifndef __FW_XL2400_H__
 #define __FW_XL2400_H__
 
-#include "bsp_base.h"
+#include "py32f0xx_msp.h"
 #include "string.h"
 
 #define XL2400_PLOAD_WIDTH       32   // Payload width
 
-#define XL2400_NSS_LOW()         LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
-#define XL2400_NSS_HIGH()        LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
+/*
+ * Required Pin Definitions:
+ * 
+ * #define XL2400_NSS_LOW         LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
+ * #define XL2400_NSS_HIGH        LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
+ * 
+*/
 
 /**
  * REGISTER TABLE

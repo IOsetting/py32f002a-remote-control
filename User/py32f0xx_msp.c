@@ -38,6 +38,29 @@
  * | PF2     | NRST  | SPI2_MOSI | MOSI   |   DATA |             |             |                  |                  |           |    |
  * | PF4/PB6 | BOOT0 |           |        |        |             |             |                  |                  | SH/LD     |    |
  * 
+ * 
+ * |         |       |           | XL2400 |     PWM     | 74HC595    |        |  
+ * | ---     | ---   | ---       | ------ | -------     | ---------  | ------ | 
+ * | PA0     |       |           |        |   TIM1_3    |            |        |   
+ * | PA1     |       |           |        |   TIM1_4    |            |        |   
+ * | PA2     |       |           |        |   TIM3_1    |            |        |   
+ * | PA3     |       |           |        |   TIM1_1    |            |        | 
+ * | PA4     |       |           |        |             | SER/DS     |        |
+ * | PA5     |       |           |        |             | SRCLK/SHCP |        |
+ * | PA6     |       |           |        |   TIM3_1    |            |        |
+ * | PA7     |       |           |        |   TIM3_2    |            |        |
+ * | PA13    | SWD   |           |        |             |            |        |
+ * | PA14    | SWC   |           |        |             |            |        |
+ * | PB0     |       |           |        |   TIM3_3    |            |        |
+ * | PB1     |       |           |        |   TIM3_4    |            |        |
+ * | PB2     |       |           |   CSN  |             |            |        |
+ * | PB3     |       |           |        |   TIM1_2    |            |        |
+ * | PF0     |       | SPI2_SCK  |   SCK  |             |            |        |
+ * | PF1     |       | SPI2_MISO |   DATA |             |            |        |
+ * | PF2     | NRST  | SPI2_MOSI |   DATA |             |            |        |
+ * | PF4/PB6 | BOOT0 |           |        |             | RCLK/STCP  |        |
+ * 
+ * 
 */
 #include "py32f0xx_msp.h"
 
@@ -119,4 +142,22 @@ void MSP_FlashSetOptionBytes(void)
   LL_FLASH_OB_Lock();
   /* Reload option bytes */
   LL_FLASH_OB_Launch();
+}
+
+uint8_t SPI_TxRxByte(uint8_t data)
+{
+  uint8_t SPITimeout = 0xFF;
+  /* Check the status of Transmit buffer Empty flag */
+  while (READ_BIT(SPI2->SR, SPI_SR_TXE) == RESET)
+  {
+    if (SPITimeout-- == 0) return 0;
+  }
+  LL_SPI_TransmitData8(SPI2, data);
+  SPITimeout = 0xFF;
+  while (READ_BIT(SPI2->SR, SPI_SR_RXNE) == RESET)
+  {
+    if (SPITimeout-- == 0) return 0;
+  }
+  // Read from RX buffer
+  return LL_SPI_ReceiveData8(SPI2);
 }

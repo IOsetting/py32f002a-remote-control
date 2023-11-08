@@ -20,7 +20,6 @@ extern "C" {
 
 
 void APP_ErrorHandler(void);
-uint8_t SPI_TxRxByte(uint8_t data);
 
 #ifdef __cplusplus
 }

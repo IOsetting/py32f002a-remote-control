@@ -15,19 +15,20 @@
 #ifndef __FW_74HC165_H__
 #define __FW_74HC165_H__
 
-#include "main.h"
+#include "py32f0xx_msp.h"
 #include "string.h"
 
-// B6
-#define HC165_LD_LOW()          LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
-#define HC165_LD_HIGH()         LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
-// A6
-#define HC165_SCK_LOW()         LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define HC165_SCK_HIGH()        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
-// A7
-#define HC165_DATA_READ()       LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_7)
+/*
+ * Required Pin Definitions:
+ * 
+ * #define HC165_LD_LOW            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
+ * #define HC165_LD_HIGH           LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
+ * #define HC165_SCK_LOW           LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC165_SCK_HIGH          LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC165_DATA_READ         LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_7)
+ * #define HC165_NOP               __NOP()
+*/
 
-#define HC165_NOP()             __NOP()
 
 uint8_t HC165_Read(void);
 

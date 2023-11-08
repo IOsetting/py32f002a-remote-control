@@ -19,27 +19,27 @@ void HC595_Write(uint8_t *data, uint8_t size)
 {
     uint8_t i;
 
-    HC595_STCP_LOW();
+    HC595_STCP_LOW;
     while(size--)
     {
         i = 8;
         // iterate through the bits in each byte
         while(i--)
         {
-            HC595_SRCLK_LOW();
+            HC595_SRCLK_LOW;
             if (*(data + size) & (1 << i))
             {
-                HC595_DS_HIGH();
+                HC595_DS_HIGH;
             }
             else
             {
-                HC595_DS_LOW();
+                HC595_DS_LOW;
             }
-            HC595_NOP();
-            HC595_SRCLK_HIGH();
-            HC595_NOP();
+            HC595_NOP;
+            HC595_SRCLK_HIGH;
+            HC595_NOP;
         }
     }
-    HC595_NOP();
-    HC595_STCP_HIGH();
+    HC595_NOP;
+    HC595_STCP_HIGH;
 }

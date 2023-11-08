@@ -7,8 +7,6 @@ extern "C" {
 
 #include "main.h"
 
-uint8_t SPI_TxRxByte(uint8_t data);
-
 int itoa(int value, char *sp, int radix);
 
 #ifdef __cplusplus

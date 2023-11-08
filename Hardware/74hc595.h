@@ -15,20 +15,20 @@
 #ifndef __FW_74HC595_H__
 #define __FW_74HC595_H__
 
-#include "main.h"
+#include "py32f0xx_msp.h"
 #include "string.h"
 
-/* Storage register clock, RCLK or STCP */
-#define HC595_STCP_LOW()        LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
-#define HC595_STCP_HIGH()       LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
-/* shift register clock, SRCLK or SHCP */
-#define HC595_SRCLK_LOW()       LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define HC595_SRCLK_HIGH()      LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
-/* serial input, SER or DS */
-#define HC595_DS_LOW()          LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define HC595_DS_HIGH()         LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
-/* NOP */
-#define HC595_NOP()             __NOP()
+/*
+ * Required Pin Definitions:
+ *
+ * #define HC595_STCP_LOW          LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
+ * #define HC595_STCP_HIGH         LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
+ * #define HC595_SRCLK_LOW         LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC595_SRCLK_HIGH        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC595_DS_LOW            LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC595_DS_HIGH           LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
+ * #define HC595_NOP               __NOP()
+ */
 
 void HC595_Write(uint8_t *data, uint8_t size);
 

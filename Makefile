@@ -30,7 +30,8 @@ PYOCD_EXE		?= pyocd
 
 # C source folders
 CDIRS	:= User \
-		Hardware
+		Hardware \
+		Driver
 # C source files (if there are any single ones)
 CFILES := 
 
@@ -43,7 +44,8 @@ AFILES	:=
 INCLUDES	:= Libraries/CMSIS/Core/Include \
 			Libraries/CMSIS/Device/PY32F0xx/Include \
 			User \
-			Hardware
+			Hardware \
+			Driver
 
 ##### Library Paths ############
 

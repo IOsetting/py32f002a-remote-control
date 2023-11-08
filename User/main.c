@@ -4,7 +4,7 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "SEGGER_RTT.h"
-#include "bsp_display.h"
+#include "drv_display.h"
 #include "xl2400.h"
 #include "74hc165.h"
 
@@ -24,7 +24,7 @@ int main(void)
 {
   BSP_RCC_HSI_PLL48MConfig();
 
-  SEGGER_RTT_printf(0, "SPI Demo: ST7567 LCD\r\nClock: %ld\r\n", SystemCoreClock);
+  SEGGER_RTT_printf(0, "Remote Control: Controller\r\nClock: %ld\r\n", SystemCoreClock);
 
   /** 
    * Important: 

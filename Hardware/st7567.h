@@ -13,30 +13,24 @@
 #ifndef __ST7567_H_
 #define __ST7567_H_
 
-#include "bsp_base.h"
+#include "py32f0xx_msp.h"
 #include "ascii_fonts.h"
 
 #define ST7567_BUF_SIZE         1024
 #define ST7567_HARDWARE_SPI     1
 
-// CSN: PB3
-#define ST7567_CS_LOW       LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3)
-#define ST7567_CS_HIGH      LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_3)
-// SCK: PF0
-#define ST7567_SCK_PORT     GPIOF
-#define ST7567_SCK_PIN      LL_GPIO_PIN_0
-// MOSI: PF2
-#define ST7567_MOSI_PORT    GPIOF
-#define ST7567_MOSI_PIN     LL_GPIO_PIN_2
-// Reset: PB0
-#define ST7567_RESET_LOW    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0)
-#define ST7567_RESET_HIGH   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0)
-// DC: PB1
-#define ST7567_DC_LOW       LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_1)
-#define ST7567_DC_HIGH      LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1)
-// Black Light
-#define ST7567_BL_LOW       __NOP()
-#define ST7567_BL_HIGH      __NOP()
+/**
+ * Required Pin Definitions:
+ * 
+ * #define ST7567_CS_LOW       LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3)
+ * #define ST7567_CS_HIGH      LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_3)
+ * #define ST7567_RESET_LOW    LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0)
+ * #define ST7567_RESET_HIGH   LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0)
+ * #define ST7567_DC_LOW       LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_1)
+ * #define ST7567_DC_HIGH      LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1)
+ * #define ST7567_BL_LOW       __NOP()
+ * #define ST7567_BL_HIGH      __NOP()
+*/
 
 // X width
 #define ST7567_WIDTH  128

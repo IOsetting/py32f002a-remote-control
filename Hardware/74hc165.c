@@ -18,19 +18,19 @@ uint8_t HC165_Read(void)
 {
     uint8_t i, data = 0;
 
-    HC165_LD_LOW();  // Pull down LD to load parallel inputs
-    HC165_LD_HIGH(); // Pull up to inhibit parallel loading
+    HC165_LD_LOW;  // Pull down LD to load parallel inputs
+    HC165_LD_HIGH; // Pull up to inhibit parallel loading
 
     for (i = 0; i < 8; i++)
     {
         data = data << 1;
-        HC165_SCK_LOW();
-        HC165_NOP(); // NOP to ensure reading correct value
-        if (HC165_DATA_READ())
+        HC165_SCK_LOW;
+        HC165_NOP; // NOP to ensure reading correct value
+        if (HC165_DATA_READ)
         {
             data |= 0x01;
         }
-        HC165_SCK_HIGH();
+        HC165_SCK_HIGH;
     }
     return data;
 }

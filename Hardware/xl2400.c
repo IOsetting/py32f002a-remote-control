@@ -20,45 +20,45 @@ uint8_t xl2400_state, cbuf[2], xbuf[XL2400_PL_WIDTH_MAX + 1];
 uint8_t XL2400_WriteReg(uint8_t reg, uint8_t value)
 {
     uint8_t reg_val;
-    XL2400_NSS_LOW();
+    XL2400_NSS_LOW;
     SPI_TxRxByte(reg);
     reg_val = SPI_TxRxByte(value);
-    XL2400_NSS_HIGH();
+    XL2400_NSS_HIGH;
     return reg_val;
 }
 
 uint8_t XL2400_ReadReg(uint8_t reg)
 {
     uint8_t reg_val;
-    XL2400_NSS_LOW();
+    XL2400_NSS_LOW;
     SPI_TxRxByte(reg);
     reg_val = SPI_TxRxByte(XL2400_CMD_NOP);
-    XL2400_NSS_HIGH();
+    XL2400_NSS_HIGH;
     return reg_val;
 }
 
 void XL2400_WriteFromBuf(uint8_t reg, const uint8_t *pBuf, uint8_t len)
 {
     uint8_t ctr;
-    XL2400_NSS_LOW();
+    XL2400_NSS_LOW;
     SPI_TxRxByte(reg);
     for (ctr = 0; ctr < len; ctr++)
     {
         SPI_TxRxByte(*pBuf++);
     }
-    XL2400_NSS_HIGH();
+    XL2400_NSS_HIGH;
 }
 
 void XL2400_ReadToBuf(uint8_t reg, uint8_t *pBuf, uint8_t len)
 {
     uint8_t ctr;
-    XL2400_NSS_LOW();
+    XL2400_NSS_LOW;
     SPI_TxRxByte(reg);
     for (ctr = 0; ctr < len; ctr++)
     {
         pBuf[ctr] = SPI_TxRxByte(XL2400_CMD_NOP);
     }
-    XL2400_NSS_HIGH();
+    XL2400_NSS_HIGH;
 }
 
 void XL2400_CE_Low(void)
