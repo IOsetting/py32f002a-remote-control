@@ -185,13 +185,18 @@ void MSP_ADC_Init(void)
   // Calibrate end
 
   /* PA0 ~ PA5 as ADC input */
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_0|LL_GPIO_PIN_1|LL_GPIO_PIN_2|LL_GPIO_PIN_3|LL_GPIO_PIN_4| LL_GPIO_PIN_5, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_0, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_1, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_2, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_3, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_4, LL_GPIO_MODE_ANALOG);
+  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_5, LL_GPIO_MODE_ANALOG);
   /* Set ADC channel and clock source when ADEN=0, set other configurations when ADSTART=0 */
   LL_ADC_SetCommonPathInternalCh(__LL_ADC_COMMON_INSTANCE(ADC1), LL_ADC_PATH_INTERNAL_NONE);
 
   LL_ADC_SetClock(ADC1, LL_ADC_CLOCK_SYNC_PCLK_DIV2);
   LL_ADC_SetResolution(ADC1, LL_ADC_RESOLUTION_12B);
-  LL_ADC_SetResolution(ADC1, LL_ADC_DATA_ALIGN_RIGHT);
+  LL_ADC_SetDataAlignment(ADC1, LL_ADC_DATA_ALIGN_RIGHT);
   LL_ADC_SetLowPowerMode(ADC1, LL_ADC_LP_MODE_NONE);
   LL_ADC_SetSamplingTimeCommonChannels(ADC1, LL_ADC_SAMPLINGTIME_41CYCLES_5);
 
@@ -216,12 +221,19 @@ void MSP_ADC_Init(void)
 
 void MSP_TIM1_Init(void)
 {
-  LL_APB1_GRP2_EnableClock(LL_APB1_GRP2_PERIPH_TIM1);
-  LL_TIM_SetPrescaler(TIM1, (SystemCoreClock / 6000) - 1);
-  LL_TIM_SetAutoReload(TIM1, 6000 - 1);
+  LL_TIM_InitTypeDef TIM1CountInit = {0};
+
+  // RCC_APBENR2_TIM1EN == LL_APB1_GRP2_PERIPH_TIM1 
+  LL_APB1_GRP2_EnableClock(RCC_APBENR2_TIM1EN);
+  
+  TIM1CountInit.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
+  TIM1CountInit.CounterMode         = LL_TIM_COUNTERMODE_UP;
+  TIM1CountInit.Prescaler           = (SystemCoreClock / 6000) - 1;
+  TIM1CountInit.Autoreload          = 600 - 1;
+  TIM1CountInit.RepetitionCounter   = 0;
+  LL_TIM_Init(TIM1, &TIM1CountInit);
   /* Triggered by update */
   LL_TIM_SetTriggerOutput(TIM1, LL_TIM_TRGO_UPDATE);
-
   LL_TIM_EnableCounter(TIM1);
 }
 

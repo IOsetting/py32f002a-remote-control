@@ -34,7 +34,6 @@ void BSP_Display_Loop(void)
     ST7567_UpdateScreen();
     ST7567_Fill(0);
   }
-  LL_mDelay(100);
   if (d1 == 0)
   {
     y1++;

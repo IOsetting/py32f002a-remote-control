@@ -68,9 +68,7 @@ int main(void)
   while(1)
   {
     BSP_Display_Loop();
-
-    // Read from 74HC165
-    SEGGER_RTT_printf(0, "%02X\r\n", HC165_Read());
+    LL_mDelay(100);
   }
 }
 
@@ -84,7 +82,8 @@ void DMA1_Channel1_IRQHandler(void)
     {
       SEGGER_RTT_printf(0, " %d", *(adc_dma_data + i));
     }
-    SEGGER_RTT_WriteString(0, "\r\n");
+    // Read from 74HC165
+    SEGGER_RTT_printf(0, " %02X\r\n", HC165_Read());
   }
 }
 
