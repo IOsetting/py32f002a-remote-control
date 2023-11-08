@@ -50,13 +50,13 @@ static ST7567_t ST7567;
 static void ST7567_TransmitByte(uint8_t dat)
 {
     ST7567_CS_LOW;
-    SPI_TxRxByte(dat);
+    ST7567_SPI_TxRxByte(dat);
     ST7567_CS_HIGH;
 }
 
 static void ST7567_Transmit(const uint8_t *pData, uint32_t Size, uint32_t Timeout)
 {
-    while (Size-- > 0)
+    while (Size--)
     {
         ST7567_TransmitByte(*(pData++));
     }
@@ -103,7 +103,7 @@ void ST7567_Init(void)
 void ST7567_Reset(void)
 {
     ST7567_RESET_LOW;
-    LL_mDelay(5);
+    ST7567_DELAY(0);
     ST7567_RESET_HIGH;
 }
 

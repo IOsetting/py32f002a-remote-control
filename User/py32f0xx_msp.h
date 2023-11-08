@@ -33,12 +33,20 @@ extern "C" {
 // Black Light
 #define ST7567_BL_LOW       __NOP()
 #define ST7567_BL_HIGH      __NOP()
+// Delay
+#define ST7567_DELAY(__MS__) LL_mDelay(__MS__)
+// SPI TxRx
+#define ST7567_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
 /***************** XL2400 *****************/
 
 // NSS:PB2
 #define XL2400_NSS_LOW          LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
 #define XL2400_NSS_HIGH         LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
+// Delay
+#define XL2400_DELAY(__MS__)    LL_mDelay(__MS__)
+// SPI TxRx
+#define XL2400_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
 /***************** 74HC165 *****************/
 

@@ -23,9 +23,10 @@
 /*
  * Required Pin Definitions:
  * 
- * #define XL2400_NSS_LOW         LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
- * #define XL2400_NSS_HIGH        LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
- * 
+ * #define XL2400_NSS_LOW           LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
+ * #define XL2400_NSS_HIGH          LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
+ * #define XL2400_DELAY(__MS__)     LL_mDelay(__MS__)
+ * #define XL2400_SPI_TxRxByte(__DATA__)    SPI_TxRxByte(__DATA__)
 */
 
 /**

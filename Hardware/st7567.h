@@ -30,6 +30,8 @@
  * #define ST7567_DC_HIGH      LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_1)
  * #define ST7567_BL_LOW       __NOP()
  * #define ST7567_BL_HIGH      __NOP()
+ * #define ST7567_DELAY(__MS__) LL_mDelay(__MS__)
+ * #define ST7567_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 */
 
 // X width

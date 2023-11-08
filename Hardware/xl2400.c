@@ -21,8 +21,8 @@ uint8_t XL2400_WriteReg(uint8_t reg, uint8_t value)
 {
     uint8_t reg_val;
     XL2400_NSS_LOW;
-    SPI_TxRxByte(reg);
-    reg_val = SPI_TxRxByte(value);
+    XL2400_SPI_TxRxByte(reg);
+    reg_val = XL2400_SPI_TxRxByte(value);
     XL2400_NSS_HIGH;
     return reg_val;
 }
@@ -31,8 +31,8 @@ uint8_t XL2400_ReadReg(uint8_t reg)
 {
     uint8_t reg_val;
     XL2400_NSS_LOW;
-    SPI_TxRxByte(reg);
-    reg_val = SPI_TxRxByte(XL2400_CMD_NOP);
+    XL2400_SPI_TxRxByte(reg);
+    reg_val = XL2400_SPI_TxRxByte(XL2400_CMD_NOP);
     XL2400_NSS_HIGH;
     return reg_val;
 }
@@ -41,10 +41,10 @@ void XL2400_WriteFromBuf(uint8_t reg, const uint8_t *pBuf, uint8_t len)
 {
     uint8_t ctr;
     XL2400_NSS_LOW;
-    SPI_TxRxByte(reg);
+    XL2400_SPI_TxRxByte(reg);
     for (ctr = 0; ctr < len; ctr++)
     {
-        SPI_TxRxByte(*pBuf++);
+        XL2400_SPI_TxRxByte(*pBuf++);
     }
     XL2400_NSS_HIGH;
 }
@@ -53,10 +53,10 @@ void XL2400_ReadToBuf(uint8_t reg, uint8_t *pBuf, uint8_t len)
 {
     uint8_t ctr;
     XL2400_NSS_LOW;
-    SPI_TxRxByte(reg);
+    XL2400_SPI_TxRxByte(reg);
     for (ctr = 0; ctr < len; ctr++)
     {
-        pBuf[ctr] = SPI_TxRxByte(XL2400_CMD_NOP);
+        pBuf[ctr] = XL2400_SPI_TxRxByte(XL2400_CMD_NOP);
     }
     XL2400_NSS_HIGH;
 }
@@ -188,14 +188,14 @@ ErrorStatus XL2400_RxCalibrate(void)
     uint8_t i, j;
     for (i = 0; i < 10; i++)
     {
-        LL_mDelay(2);
+        XL2400_DELAY(2);
         XL2400_ReadToBuf(XL2400_CMD_R_REGISTER | XL2400_REG_ANALOG_CFG3, cbuf, 2);
         *(cbuf + 1) |= 0x90;
         *(cbuf + 1) &= ~0x20;
         XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_ANALOG_CFG3, cbuf, 2);
         *(cbuf + 1) |= 0x40;
         XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_ANALOG_CFG3, cbuf, 2);
-        LL_mDelay(1);
+        XL2400_DELAY(1);
         XL2400_ReadToBuf(XL2400_CMD_R_REGISTER | XL2400_REG_FIFO_STATUS, cbuf, 2);
 
         if (*(cbuf + 1) & 0x20)
@@ -219,7 +219,7 @@ void XL2400_SetTxMode(void)
     XL2400_ClearStatus();
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_CFG_TOP, 0x7E);
     XL2400_RxCalibrate();
-    LL_mDelay(2);
+    XL2400_DELAY(2);
 }
 
 void XL2400_SetRxMode(void)
@@ -229,7 +229,7 @@ void XL2400_SetRxMode(void)
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_CFG_TOP, 0x7F);
     // XL2400_RxCalibrate();
     XL2400_CE_High();
-    LL_mDelay(1);
+    XL2400_DELAY(1);
 }
 
 ErrorStatus XL2400_TxFast(const uint8_t *ucPayload, uint8_t length)
@@ -268,7 +268,7 @@ uint8_t XL2400_Tx(const uint8_t *ucPayload, uint8_t length)
             break;
         }
         // delay actually 1ms
-        LL_mDelay(0);
+        XL2400_DELAY(0);
     }
     return status;
 }
