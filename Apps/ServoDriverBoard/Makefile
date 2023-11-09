@@ -1,6 +1,6 @@
 ##### Project #####
 
-PROJECT			?= remote-controller
+PROJECT			?= servo-driver
 # `$(shell pwd)` or `.`, both works
 TOP			= ../..
 # The path for generated files
@@ -32,15 +32,15 @@ PYOCD_EXE		?= pyocd
 
 # C source folders
 CDIRS	:= Hardware \
-		Apps/RemoteController/Driver \
-		Apps/RemoteController/User
+		Apps/ServoDriverBoard/Driver \
+		Apps/ServoDriverBoard/User
 		
 
 # C source files (if there are any single ones)
 CFILES := 
 
 # ASM source folders
-ADIRS	:= Apps/RemoteController/User
+ADIRS	:= Apps/ServoDriverBoard/User
 # ASM single files
 AFILES	:= 
 
@@ -48,8 +48,8 @@ AFILES	:=
 INCLUDES	:= Libraries/CMSIS/Core/Include \
 			Libraries/CMSIS/Device/PY32F0xx/Include \
 			Hardware \
-			Apps/RemoteController/Driver \
-			Apps/RemoteController/User
+			Apps/ServoDriverBoard/Driver \
+			Apps/ServoDriverBoard/User
 
 ##### Library Paths ############
 

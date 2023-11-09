@@ -10,8 +10,7 @@ CC			= $(PREFIX)gcc
 AS			= $(PREFIX)as
 LD			= $(PREFIX)ld
 OBJCOPY		= $(PREFIX)objcopy
-# `$(shell pwd)` or `.`, both works
-TOP			= .
+
 BDIR		= $(TOP)/$(BUILD_DIR)
 
 # For each direcotry, add it to csources
@@ -67,13 +66,7 @@ TGT_INCFLAGS := $(addprefix -I $(TOP)/, $(INCLUDES))
 
 .PHONY: all clean flash echo
 
-all: fullcheck $(BDIR)/$(PROJECT).elf $(BDIR)/$(PROJECT).bin $(BDIR)/$(PROJECT).hex
-
-fullcheck:
-	@if [ '$(findstring PY32F07,$(MCU_TYPE))' = 'PY32F07' ] && [ '$(USE_LL_LIB)' = 'y' ]; then \
-		echo "LL for PY32F07x is not supported yet"; \
-		return 1; \
-	fi
+all: $(BDIR)/$(PROJECT).elf $(BDIR)/$(PROJECT).bin $(BDIR)/$(PROJECT).hex
 
 # for debug
 echo:
@@ -87,13 +80,13 @@ echo:
 -include $(DEPS)
 
 # Compile c to obj -- should be `$(BDIR)/%.o: $(TOP)/%.c`, but since $(TOP) is base folder so non-path also works
-$(BDIR)/%.o: %.c
+$(BDIR)/%.o: $(TOP)/%.c
 	@printf "  CC\t$<\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_CFLAGS) $(TGT_INCFLAGS) -MT $@ -o $@ -c $< -MD -MF $(BDIR)/$*.d -MP
 
 # Compile asm to obj
-$(BDIR)/%.o: %.s
+$(BDIR)/%.o: $(TOP)/%.s
 	@printf "  AS\t$<\n"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(TGT_ASFLAGS) -o $@ -c $<
