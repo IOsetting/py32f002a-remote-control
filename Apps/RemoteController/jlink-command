@@ -1,0 +1,4 @@
+erase
+loadfile ../../Build/remote-controller.hex 0 noreset
+reset
+exit

@@ -8,9 +8,7 @@
 #include "xl2400.h"
 #include "74hc165.h"
 
-// 0:Control, 1:Driver
-#define PAD_MODE 0
-
+// 6-channel analog data
 __IO uint16_t adc_dma_data[6];
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
