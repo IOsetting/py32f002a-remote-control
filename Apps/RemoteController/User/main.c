@@ -61,6 +61,10 @@ int main(void)
 
   BSP_Display_Init();
   LL_mDelay(2000);
+  BSP_Display_Init2();
+  LL_mDelay(2000);
+  BSP_Display_Init3();
+  LL_mDelay(2000);
 
   /* Infinite loop */
   while(1)

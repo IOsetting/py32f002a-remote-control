@@ -14,10 +14,6 @@
 #define __ST7567_H_
 
 #include "py32f0xx_msp.h"
-#include "ascii_fonts.h"
-
-#define ST7567_BUF_SIZE         1024
-#define ST7567_HARDWARE_SPI     1
 
 /**
  * Required Pin Definitions:
@@ -174,14 +170,6 @@ void ST7567_BackLight_Off(void);
  */
 void ST7567_SetContrast(uint8_t val);
 
-/** 
- * @brief  Updates buffer from internal RAM to LCD
- * @note   This function must be called each time you do some changes to LCD, to update buffer from RAM to LCD
- * @param  None
- * @retval None
- */
-void ST7567_UpdateScreen(void);
-
 /**
  * @brief  Toggles pixels invertion inside internal RAM
  * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
@@ -190,154 +178,18 @@ void ST7567_UpdateScreen(void);
  */
 void ST7567_ToggleInvert(void);
 
+
+void ST7567_WritePage(uint8_t page, uint8_t column, const uint8_t *pData, uint32_t size);
+
+void ST7567_FillPage(uint8_t page, uint8_t column, const uint8_t data, uint32_t size);
+
 /** 
  * @brief  Fills entire LCD with desired color
  * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
  * @param  Color: Color to be used for screen fill. This parameter can be a value of @ref ST7567_COLOR_t enumeration
  * @retval None
  */
-void ST7567_Fill(uint8_t Color);
+void ST7567_FillAll(uint8_t Color);
 
-/**
- * @brief  Draws pixel at desired location
- * @note   @ref ST7567_UpdateScreen() must called after that in order to see updated LCD screen
- * @param  x: X location. This parameter can be a value between 0 and ST7567_WIDTH - 1
- * @param  y: Y location. This parameter can be a value between 0 and ST7567_HEIGHT - 1
- * @param  color: Color to be used for screen fill. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawPixel(uint16_t x, uint16_t y, uint8_t color);
-
-/**
- * @brief  Sets cursor pointer to desired location for strings
- * @param  x: X location. This parameter can be a value between 0 and ST7567_WIDTH - 1
- * @param  y: Y location. This parameter can be a value between 0 and ST7567_HEIGHT - 1
- * @retval None
- */
-void ST7567_GotoXY(uint16_t x, uint16_t y);
-
-/**
- * @brief  Puts character to internal RAM
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  ch: Character to be written
- * @param  *Font: Pointer to @ref FontDef_t structure with used font
- * @param  color: Color used for drawing. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval Character written
- */
-char ST7567_Putc(char ch, FontDef_t* Font, uint8_t color);
-
-/**
- * @brief  Puts string to internal RAM
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  *str: String to be written
- * @param  *Font: Pointer to @ref FontDef_t structure with used font
- * @param  color: Color used for drawing. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval Zero on success or character value when function failed
- */
-char ST7567_Puts(char* str, FontDef_t* Font, uint8_t color);
-
-/**
- * @brief  Draws line on LCD
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x0: Line X start point. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y0: Line Y start point. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  x1: Line X end point. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y1: Line Y end point. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawLine(uint16_t x0, uint16_t y0, uint16_t x1, uint16_t y1, uint8_t c);
-
-/**
- * @brief  Draws rectangle on LCD
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x: Top left X start point. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y: Top left Y start point. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  w: Rectangle width in units of pixels
- * @param  h: Rectangle height in units of pixels
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t c);
-
-/**
- * @brief  Draws filled rectangle on LCD
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x: Top left X start point. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y: Top left Y start point. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  w: Rectangle width in units of pixels
- * @param  h: Rectangle height in units of pixels
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawFilledRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint8_t c);
-
-/**
- * @brief  Draws triangle on LCD
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x1: First coordinate X location. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y1: First coordinate Y location. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  x2: Second coordinate X location. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y2: Second coordinate Y location. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  x3: Third coordinate X location. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y3: Third coordinate Y location. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawTriangle(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, uint16_t x3, uint16_t y3, uint8_t color);
-
-/**
- * @brief  Draws circle to STM buffer
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x: X location for center of circle. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y: Y location for center of circle. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  r: Circle radius in units of pixels
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawCircle(int16_t x0, int16_t y0, int16_t r, uint8_t c);
-
-/**
- * @brief  Draws filled circle to STM buffer
- * @note   @ref ST7567_UpdateScreen() must be called after that in order to see updated LCD screen
- * @param  x: X location for center of circle. Valid input is 0 to ST7567_WIDTH - 1
- * @param  y: Y location for center of circle. Valid input is 0 to ST7567_HEIGHT - 1
- * @param  r: Circle radius in units of pixels
- * @param  c: Color to be used. This parameter can be a value of @ref ST7567_COLOR_t enumeration
- * @retval None
- */
-void ST7567_DrawFilledCircle(int16_t x0, int16_t y0, int16_t r, uint8_t c);
-
-/**
- * @brief  Writes multi bytes to slave
- * @param  *I2Cx: I2C used
- * @param  address: 7 bit slave address, left aligned, bits 7:1 are used, LSB bit is not used
- * @param  reg: register to write to
- * @param  *data: pointer to data array to write it to slave
- * @param  count: how many bytes will be written
- * @retval None
- */
-void ST7567_Image(uint8_t *img, uint8_t frame, uint8_t x, uint8_t y);
-
-/**
- * @brief  Writes single byte command to slave
- * @param  command: command to be written
- * @retval None
- */
-void ST7567_WriteCommand(uint8_t command);
-
-/**
- * @brief  Writes single byte data to slave
- * @param  data: data to be written
- * @retval None
- */
-void ST7567_WriteData(uint8_t data);
-
-/**
- * @brief  Test ST7567 LCD Display RAM
- * @param  None
- * @retval None
- */
-void ST7567_TestDisplayRAM(void);
 
 #endif // __ST7567_H_
