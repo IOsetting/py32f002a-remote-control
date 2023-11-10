@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "SEGGER_RTT.h"
 #include "xl2400.h"
 
 uint8_t xl2400_state, cbuf[2], xbuf[XL2400_PL_WIDTH_MAX + 1];
@@ -82,7 +81,7 @@ ErrorStatus XL2400_SPI_Test(void)
     XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_TX_ADDR, ptr, 5);
     XL2400_ReadToBuf(XL2400_CMD_R_REGISTER | XL2400_REG_TX_ADDR, xbuf, 5);
     for (i = 0; i < 5; i++) {
-        SEGGER_RTT_printf(0, "%02X", *(xbuf + i));
+        DEBUG_PRINTF("%02X", *(xbuf + i));
         if (*(xbuf + i) != *ptr++) return ERROR;
     }
     return SUCCESS;

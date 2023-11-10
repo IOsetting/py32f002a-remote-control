@@ -3,7 +3,6 @@
 #include "main.h"
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
-#include "SEGGER_RTT.h"
 #include "drv_display.h"
 #include "xl2400.h"
 #include "74hc165.h"
@@ -24,7 +23,7 @@ int main(void)
 {
   BSP_RCC_HSI_PLL48MConfig();
 
-  SEGGER_RTT_printf(0, "Remote Control: Controller\r\nClock: %ld\r\n", SystemCoreClock);
+  DEBUG_PRINTF("Remote Control: Controller\r\nClock: %ld\r\n", SystemCoreClock);
 
   /** 
    * Important: 
@@ -36,11 +35,11 @@ int main(void)
   /* Check if PF0/PF2 pin has been set as GPIO pin*/
   if(READ_BIT(FLASH->OPTR, FLASH_OPTR_NRST_MODE) == OB_RESET_MODE_RESET)
   {
-    SEGGER_RTT_WriteString(0, "Write option bytes\r\n");
+    DEBUG_PRINT_STRING("Write option bytes\r\n");
     /* If not, turn off the RESET function on pin(PF0/PF2), this will reset the MCU */
     MSP_FlashSetOptionBytes();
   }
-  SEGGER_RTT_WriteString(0, "Option bytes have been set\r\n");
+  DEBUG_PRINT_STRING("Option bytes have been set\r\n");
 
   MSP_GPIO_Init();
   MSP_SPI_Init();
@@ -51,10 +50,10 @@ int main(void)
 
   while (XL2400_SPI_Test() == ERROR)
   {
-    SEGGER_RTT_WriteString(0, " - check failed\r\n");
+    DEBUG_PRINT_STRING(" - check failed\r\n");
     LL_mDelay(1000);
   }
-  SEGGER_RTT_WriteString(0, " - check passed\r\n");
+  DEBUG_PRINT_STRING(" - check passed\r\n");
 
   XL2400_Init();
   XL2400_SetPower(XL2400_RF_0DB);
@@ -79,13 +78,13 @@ void DMA1_Channel1_IRQHandler(void)
   if (LL_DMA_IsActiveFlag_TC1(DMA1) == 1)
   {
     LL_DMA_ClearFlag_TC1(DMA1);
-    SEGGER_RTT_WriteString(0, "Read value:");
+    DEBUG_PRINT_STRING("Read value:");
     for (uint8_t i = 0; i < 6; i++)
     {
-      SEGGER_RTT_printf(0, " %d", *(adc_dma_data + i));
+      DEBUG_PRINTF(" %d", *(adc_dma_data + i));
     }
     // Read from 74HC165
-    SEGGER_RTT_printf(0, " %02X\r\n", HC165_Read());
+    DEBUG_PRINTF(" %02X\r\n", HC165_Read());
   }
 }
 

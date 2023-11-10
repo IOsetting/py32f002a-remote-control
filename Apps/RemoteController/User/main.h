@@ -5,6 +5,20 @@
 extern "C" {
 #endif
 
+#define DEBUG 0
+
+
+#if DEBUG == 0
+    #define DEBUG_PRINTF(__ARG1__, __ARG2__)    (void)(__ARG1__);(void)(__ARG2__)
+    #define DEBUG_PRINT_STRING(__ARG1__)        (void)(__ARG1__)
+#else
+
+#include "SEGGER_RTT.h"
+
+    #define DEBUG_PRINTF(__ARG1__, __ARG2__)    SEGGER_RTT_printf(0, __ARG1__, __ARG2__);
+    #define DEBUG_PRINT_STRING(__ARG1__)        SEGGER_RTT_WriteString(0, __ARG1__);
+#endif
+
 #include "py32f0xx_ll_adc.h"
 #include "py32f0xx_ll_bus.h"
 #include "py32f0xx_ll_cortex.h"
