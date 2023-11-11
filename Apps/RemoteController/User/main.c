@@ -48,11 +48,11 @@ int main(void)
   MSP_ADC_Init();
   MSP_TIM1_Init();
 
-  BSP_Display_Init();
+  DRV_Display_Init();
   LL_mDelay(8000);
-  BSP_Display_Init2();
+  DRV_Display_Init2();
   LL_mDelay(2000);
-  BSP_Display_Init3();
+  DRV_Display_Init3();
   LL_mDelay(2000);
 
   while (XL2400_SPI_Test() == ERROR)
@@ -68,7 +68,7 @@ int main(void)
   /* Infinite loop */
   while(1)
   {
-    BSP_Display_Loop();
+    DRV_Display_Loop();
     LL_mDelay(100);
   }
 }

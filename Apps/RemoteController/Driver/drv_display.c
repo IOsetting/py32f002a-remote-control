@@ -4,7 +4,7 @@
 
 static uint8_t y1 = 0, d1 = 0;
 
-void BSP_Display_Init(void)
+void DRV_Display_Init(void)
 {
   uint8_t data[8] = {0x81, 0x81,0x42, 0x42, 0x24, 0x24, 0x18, 0x18};
   ST7567_Init();
@@ -39,12 +39,12 @@ void BSP_Display_Init(void)
   ST7567_WritePage(7, 24, data, 8);
 }
 
-void BSP_Display_Init2(void)
+void DRV_Display_Init2(void)
 {
   ST7567_FillAll(0x88);
 }
 
-void BSP_Display_Init3(void)
+void DRV_Display_Init3(void)
 {
   uint8_t i = 1, j = 8;
 
@@ -55,7 +55,7 @@ void BSP_Display_Init3(void)
   }
 }
 
-void BSP_Display_Loop(void)
+void DRV_Display_Loop(void)
 {
   ST7567_FillPage(y1++, 0, d1++, ST7567_WIDTH);
   y1 = y1 % 8;
@@ -64,38 +64,18 @@ void BSP_Display_Loop(void)
 
 void DRV_PutChar(uint8_t page, uint8_t column, char ch, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert)
 {
-  uint8_t tmp, data[charWidth], i, j;
+  uint8_t data[charWidth], i;
   for (i = 0; i < charWidth; i++)
   {
-    data[i] = colorInvert? 0xFF : 0x00;
-    if (i < xOffset) continue;
-
-    for (j = 0; j < font->height; j++)
+    if (i < xOffset || i >= (font->width + xOffset))
     {
-      tmp = font->data[(ch -32) * font->height + j];
-      if ((tmp >> (i - xOffset)) & 1)
-      {
-        if (colorInvert)
-        {
-          data[i] = data[i] & ~(1 << (j + yOffset));
-        }
-        else
-        {
-          data[i] = data[i] | (1 << (j + yOffset));
-        }
-      }
-      else
-      {
-        if (colorInvert)
-        {
-          data[i] = data[i] | (1 << (j + yOffset));
-        }
-        else
-        {
-          data[i] = data[i] & ~(1 << (j + yOffset));
-        }
-      }
-      
+      data[i] = colorInvert? 0xFF : 0x00;
+    }
+    else
+    {
+      data[i] = font->data[(ch -32) * font->width + (i - xOffset)];
+      data[i] = data[i] << yOffset;
+      data[i] = colorInvert? ~data[i] : data[i];
     }
   }
   ST7567_WritePage(page, column, data, charWidth);
