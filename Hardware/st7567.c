@@ -37,7 +37,7 @@
 static uint8_t ST7567_Inverted = 0;
 
 
-void ST7567_TransmitByte(uint8_t dat)
+void ST7567_TransmitByte(const uint8_t dat)
 {
     ST7567_CS_LOW;
     ST7567_SPI_TxRxByte(dat);

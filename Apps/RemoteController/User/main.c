@@ -10,6 +10,13 @@
 // 6-channel analog data
 __IO uint16_t adc_dma_data[6];
 
+/*
+ * [0:5]: Analog channel 1 - 6
+ * [6]:   Key 1 - 8
+ * [7]:   CRC
+*/ 
+uint8_t pad_state[8];
+
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
 uint8_t tmp[] = {
@@ -21,6 +28,7 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
 {
+  uint8_t i;
   BSP_RCC_HSI_PLL48MConfig();
 
   DEBUG_PRINTF("Remote Control: Controller\r\nClock: %ld\r\n", SystemCoreClock);
@@ -48,12 +56,8 @@ int main(void)
   MSP_ADC_Init();
   MSP_TIM1_Init();
 
+  DRV_Display_Reset();
   DRV_Display_Init();
-  LL_mDelay(8000);
-  DRV_Display_Init2();
-  LL_mDelay(2000);
-  DRV_Display_Init3();
-  LL_mDelay(2000);
 
   while (XL2400_SPI_Test() == ERROR)
   {
@@ -68,23 +72,30 @@ int main(void)
   /* Infinite loop */
   while(1)
   {
-    DRV_Display_Loop();
+    for (i = 0; i < 8; i++)
+    {
+      DEBUG_PRINTF("%02X ", pad_state[i]);
+    }
+    DEBUG_PRINT_STRING("\r\n");
+    DRV_Display_Update(pad_state);
     LL_mDelay(100);
   }
 }
 
 void DMA1_Channel1_IRQHandler(void)
 {
+  uint8_t crc = 0;
   if (LL_DMA_IsActiveFlag_TC1(DMA1) == 1)
   {
     LL_DMA_ClearFlag_TC1(DMA1);
-    DEBUG_PRINT_STRING("Read value:");
     for (uint8_t i = 0; i < 6; i++)
     {
-      DEBUG_PRINTF(" %d", *(adc_dma_data + i));
+      pad_state[i] = (uint8_t)(*(adc_dma_data + i) >> 4);
+      crc += pad_state[i];
     }
     // Read from 74HC165
-    DEBUG_PRINTF(" %02X\r\n", HC165_Read());
+    pad_state[6] = HC165_Read();
+    pad_state[7] = crc + pad_state[6];
   }
 }
 

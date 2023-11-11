@@ -180,9 +180,11 @@ void ST7567_ToggleInvert(void);
 
 void ST7567_SetCursor(uint8_t page, uint8_t column);
 
-void ST7567_TransmitByte(uint8_t dat);
+void ST7567_TransmitByte(const uint8_t dat);
 
 void ST7567_TransmitBytes(const uint8_t *pData, uint32_t size);
+
+void ST7567_TransmitRepeat(const uint8_t data, uint32_t size);
 
 void ST7567_WriteByPage(uint8_t page, uint8_t column, const uint8_t *pData, uint32_t size);
 
