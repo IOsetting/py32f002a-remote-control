@@ -48,6 +48,13 @@ int main(void)
   MSP_ADC_Init();
   MSP_TIM1_Init();
 
+  BSP_Display_Init();
+  LL_mDelay(8000);
+  BSP_Display_Init2();
+  LL_mDelay(2000);
+  BSP_Display_Init3();
+  LL_mDelay(2000);
+
   while (XL2400_SPI_Test() == ERROR)
   {
     DEBUG_PRINT_STRING(" - check failed\r\n");
@@ -57,13 +64,6 @@ int main(void)
 
   XL2400_Init();
   XL2400_SetPower(XL2400_RF_0DB);
-
-  BSP_Display_Init();
-  LL_mDelay(2000);
-  BSP_Display_Init2();
-  LL_mDelay(2000);
-  BSP_Display_Init3();
-  LL_mDelay(2000);
 
   /* Infinite loop */
   while(1)

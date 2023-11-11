@@ -6,11 +6,14 @@ extern "C" {
 #endif
 
 #include "main.h"
+#include "ascii_fonts.h"
 
 void BSP_Display_Init(void);
 void BSP_Display_Init2(void);
 void BSP_Display_Init3(void);
 void BSP_Display_Loop(void);
+
+void DRV_PutChar(uint8_t page, uint8_t column, char ch, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert);
 
 #ifdef __cplusplus
 }
