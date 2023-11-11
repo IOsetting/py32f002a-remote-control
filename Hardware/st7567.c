@@ -37,19 +37,31 @@
 static uint8_t ST7567_Inverted = 0;
 
 
-static void ST7567_TransmitByte(uint8_t dat)
+void ST7567_TransmitByte(uint8_t dat)
 {
     ST7567_CS_LOW;
     ST7567_SPI_TxRxByte(dat);
     ST7567_CS_HIGH;
 }
 
-static void ST7567_Transmit(const uint8_t *pData, uint32_t Size, uint32_t Timeout)
+void ST7567_TransmitBytes(const uint8_t *pData, uint32_t size)
 {
-    while (Size--)
+    ST7567_CS_LOW;
+    while (size--)
     {
-        ST7567_TransmitByte(*(pData++));
+        ST7567_SPI_TxRxByte(*(pData++));
     }
+    ST7567_CS_HIGH;
+}
+
+void ST7567_TransmitRepeat(const uint8_t data, uint32_t size)
+{
+    ST7567_CS_LOW;
+    while (size--)
+    {
+        ST7567_SPI_TxRxByte(data);
+    }
+    ST7567_CS_HIGH;
 }
 
 void ST7567_WriteCommand(uint8_t command)
@@ -57,11 +69,6 @@ void ST7567_WriteCommand(uint8_t command)
     ST7567_DC_LOW;
     ST7567_TransmitByte(command);
     ST7567_DC_HIGH;
-}
-
-void ST7567_WriteData(uint8_t data)
-{
-    ST7567_TransmitByte(data);
 }
 
 void ST7567_Init(void)
@@ -127,23 +134,27 @@ void ST7567_ToggleInvert(void)
     }
 }
 
-void ST7567_WritePage(uint8_t page, uint8_t column, const uint8_t *pData, uint32_t size) 
+void ST7567_SetCursor(uint8_t page, uint8_t column)
 {
     ST7567_WriteCommand(ST7567_SET_PAGE_ADDRESS | (page & ST7567_SET_PAGE_ADDRESS_MASK));
     ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_MSB | ((column + ST7567_X_OFFSET) >> 4));
     ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_LSB | ((column + ST7567_X_OFFSET) & 0x0F));
-    ST7567_Transmit(pData, size, ST7567_TIMEOUT);
 }
 
-void ST7567_FillPage(uint8_t page, uint8_t column, const uint8_t data, uint32_t size) 
+void ST7567_WriteByPage(uint8_t page, uint8_t column, const uint8_t *pData, uint32_t size) 
 {
     ST7567_WriteCommand(ST7567_SET_PAGE_ADDRESS | (page & ST7567_SET_PAGE_ADDRESS_MASK));
     ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_MSB | ((column + ST7567_X_OFFSET) >> 4));
     ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_LSB | ((column + ST7567_X_OFFSET) & 0x0F));
-    while (size--)
-    {
-        ST7567_TransmitByte(data);
-    }
+    ST7567_TransmitBytes(pData, size);
+}
+
+void ST7567_FillByPage(uint8_t page, uint8_t column, const uint8_t data, uint32_t size) 
+{
+    ST7567_WriteCommand(ST7567_SET_PAGE_ADDRESS | (page & ST7567_SET_PAGE_ADDRESS_MASK));
+    ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_MSB | ((column + ST7567_X_OFFSET) >> 4));
+    ST7567_WriteCommand(ST7567_SET_COLUMN_ADDRESS_LSB | ((column + ST7567_X_OFFSET) & 0x0F));
+    ST7567_TransmitRepeat(data, size);
 }
 
 void ST7567_FillAll(uint8_t data)
@@ -151,6 +162,6 @@ void ST7567_FillAll(uint8_t data)
     uint8_t i = 0;
     for (i = 0; i < ST7567_PAGES; i++)
     {
-        ST7567_FillPage(i, 0, data, ST7567_WIDTH);
+        ST7567_FillByPage(i, 0, data, ST7567_WIDTH);
     }
 }

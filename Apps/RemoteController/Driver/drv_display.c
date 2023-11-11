@@ -10,8 +10,9 @@ void DRV_Display_Init(void)
   ST7567_Init();
 
   ST7567_FillAll(0);
-  ST7567_WritePage(1, 10, data, 8);
-  ST7567_WritePage(2, 20, data, 8);
+  ST7567_WriteByPage(0, 10, data, 8);
+  DRV_PutString(1, 0, "CHECK THIS    ", &Font_5x7, 6, 0, 1, 1);
+  DRV_PutString(2, 0, "HIGH ALTITUDE ", &Font_5x7, 6, 0, 1, 1);
 
   DRV_PutChar(3, 0, '0', &Font_5x7, 6, 1, 1, 1);
   DRV_PutChar(3, 6, '1', &Font_5x7, 6, 1, 1, 1);
@@ -30,13 +31,13 @@ void DRV_Display_Init(void)
   DRV_PutChar(6, 6, 'T', &Font_5x7, 6, 1, 1, 0);
   DRV_PutChar(6,12, 'E', &Font_5x7, 6, 1, 1, 1);
   DRV_PutChar(6,18, 'D', &Font_5x7, 6, 1, 1, 0);
-  ST7567_WritePage(6, 24, data, 8);
+  ST7567_WriteByPage(6, 24, data, 8);
   DRV_PutChar(7, 0, 'B', &Font_5x7, 6, 1, 1, 0);
   DRV_PutChar(7, 6, 'T', &Font_5x7, 6, 1, 1, 1);
 
   DRV_PutChar(7,12, 'A', &Font_5x7, 6, 1, 1, 0);
   DRV_PutChar(7,18, 'F', &Font_5x7, 6, 1, 1, 1);
-  ST7567_WritePage(7, 24, data, 8);
+  ST7567_WriteByPage(7, 24, data, 8);
 }
 
 void DRV_Display_Init2(void)
@@ -57,11 +58,17 @@ void DRV_Display_Init3(void)
 
 void DRV_Display_Loop(void)
 {
-  ST7567_FillPage(y1++, 0, d1++, ST7567_WIDTH);
+  ST7567_FillByPage(y1++, 0, d1++, ST7567_WIDTH);
   y1 = y1 % 8;
 }
 
-
+/**
+ * Print one ASCII character at specified page and column
+ * charWdith: width in pixes
+ * xOffset: offset in x direction, start from left-top
+ * yOffset: offset in y direction, start from left-top
+ * colorInvert: 0:no, 1:yes
+*/
 void DRV_PutChar(uint8_t page, uint8_t column, char ch, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert)
 {
   uint8_t data[charWidth], i;
@@ -78,5 +85,30 @@ void DRV_PutChar(uint8_t page, uint8_t column, char ch, FontDef_t* font, uint8_t
       data[i] = colorInvert? ~data[i] : data[i];
     }
   }
-  ST7567_WritePage(page, column, data, charWidth);
+  ST7567_SetCursor(page, column);
+  ST7567_TransmitBytes(data, charWidth);
+}
+
+void DRV_PutString(uint8_t page, uint8_t column, char *str, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert)
+{
+  uint8_t ch, data[charWidth], i;
+
+  ST7567_SetCursor(page, column);
+  while ((ch = *(str++)))
+  {
+    for (i = 0; i < charWidth; i++)
+    {
+      if (i < xOffset || i >= (font->width + xOffset))
+      {
+        data[i] = colorInvert? 0xFF : 0x00;
+      }
+      else
+      {
+        data[i] = font->data[(ch -32) * font->width + (i - xOffset)];
+        data[i] = data[i] << yOffset;
+        data[i] = colorInvert? ~data[i] : data[i];
+      }
+    }
+    ST7567_TransmitBytes(data, charWidth);
+  }
 }
