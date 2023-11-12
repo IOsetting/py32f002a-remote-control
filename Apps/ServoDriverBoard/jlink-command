@@ -1,0 +1,4 @@
+erase
+loadfile ../../Build/servo-driver.hex 0 noreset
+reset
+exit

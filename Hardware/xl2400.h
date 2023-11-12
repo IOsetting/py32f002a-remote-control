@@ -18,7 +18,7 @@
 #include "py32f0xx_msp.h"
 #include "string.h"
 
-#define XL2400_PLOAD_WIDTH       32   // Payload width
+#define XL2400_PLOAD_WIDTH       8   // Payload width
 
 /*
  * Required Pin Definitions:

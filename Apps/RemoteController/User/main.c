@@ -16,14 +16,17 @@ __IO uint16_t adc_dma_data[6];
  * [7]:   CRC
 */ 
 uint8_t pad_state[8];
+/*
+ * [0:4]: RX address
+ * [5:9]: TX address
+ * [10]:  success rate (0x00 - 0xFF)
+ */
+uint8_t wireless_state[11];
+uint8_t wireless_tx = 0, wireless_tx_succ = 0;
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
-uint8_t tmp[] = {
-    0x1F, 0x80, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18,
-    0x21, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x28,
-    0x31, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x38,
-    0x41, 0x12, 0x13, 0x14, 0x15, 0x16, 0x37, 0x48};
+
 extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
@@ -67,6 +70,11 @@ int main(void)
 
   XL2400_Init();
   XL2400_SetPower(XL2400_RF_0DB);
+  XL2400_SetChannel(78);
+  XL2400_SetTxAddress(RX_ADDRESS);
+  XL2400_SetRxAddress(TX_ADDRESS);
+  XL2400_SetTxMode();
+  wireless_state[10] = 0;
 
   /* Infinite loop */
   while(1)
@@ -79,6 +87,19 @@ int main(void)
     DEBUG_PRINT_STRING("\r\n");
 #endif
     DRV_Display_Update(pad_state);
+    // Send
+    wireless_tx++;
+    if (XL2400_Tx(pad_state, XL2400_PLOAD_WIDTH) == 0x20)
+    {
+      wireless_tx_succ++;
+    }
+    if (wireless_tx == 0xFF)
+    {
+      wireless_state[10] = wireless_tx_succ;
+      DEBUG_PRINTF("TX_SUCC: %02X\r\n", wireless_tx_succ);
+      wireless_tx = 0;
+      wireless_tx_succ = 0;
+    }
     LL_mDelay(50);
   }
 }
