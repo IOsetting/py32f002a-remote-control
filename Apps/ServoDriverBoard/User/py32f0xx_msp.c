@@ -17,7 +17,6 @@
  *               -----------
  * 
  * 
- * 
  * |         |       |           | XL2400 |     PWM     | 74HC595    |        |  
  * | ---     | ---   | ---       | ------ | -------     | ---------  | ------ | 
  * | PA0     |       |           |        |   TIM1_3    |            |        |   
@@ -47,22 +46,24 @@ void MSP_GPIO_Init(void)
 {
   LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
   LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA | LL_IOP_GRP1_PERIPH_GPIOB | LL_IOP_GRP1_PERIPH_GPIOF);
-  // PB0 RESET(ST7567)
-  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_0, LL_GPIO_MODE_OUTPUT);
-  // PB1 DC/AO(ST7567)
-  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_1, LL_GPIO_MODE_OUTPUT);
+
   // PB2 CSN(XL2400)
   LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_2, LL_GPIO_MODE_OUTPUT);
-  // PB3 CSN(ST7567)
-  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_3, LL_GPIO_MODE_OUTPUT);
   // PF4 Analog(Inhibit PF4 for PB6)
   LL_GPIO_SetPinMode(GPIOF, LL_GPIO_PIN_4, LL_GPIO_MODE_ANALOG);
-  // PA6 CLK(74HC165)
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
-  // PB6 SH/LD(74HC165)
-  LL_GPIO_SetPinMode(GPIOB, LL_GPIO_PIN_6, LL_GPIO_MODE_OUTPUT);
-  // PA7 QH(74HC165)
-  LL_GPIO_SetPinMode(GPIOA, LL_GPIO_PIN_7, LL_GPIO_MODE_INPUT);
+
+  /* PB6 RCLK/STCP */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_6;
+  GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
+  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+  /* PA5 SRCLK/SHCP */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_5;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+  /* PA4 SER/DS */
+  GPIO_InitStruct.Pin = LL_GPIO_PIN_4;
+  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   // PF0 AF3 = SPI2 SCK
   GPIO_InitStruct.Pin = LL_GPIO_PIN_0;

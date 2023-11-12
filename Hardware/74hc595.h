@@ -30,6 +30,9 @@
  * #define HC595_NOP               __NOP()
  */
 
-void HC595_Write(uint8_t *data, uint8_t size);
+void HC595_WriteBytes(uint8_t *data, uint8_t size);
+
+void HC595_WriteByte(uint8_t data);
+
 
 #endif

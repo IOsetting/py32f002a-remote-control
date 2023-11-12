@@ -4,6 +4,7 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "xl2400.h"
+#include "74hc595.h"
 
 /*
  * [0:5]: Analog channel 1 - 6
@@ -65,7 +66,6 @@ int main(void)
     i++;
     if (XL2400_Rx() & XL2400_FLAG_RX_DR)
     {
-      
       SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X %02X ", 
         i, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
       // CRC check
@@ -86,6 +86,8 @@ int main(void)
       }
       i = 0;
     }
+
+    HC595_WriteByte(*(pad_state + 6));
     LL_mDelay(10);
   }
 }
