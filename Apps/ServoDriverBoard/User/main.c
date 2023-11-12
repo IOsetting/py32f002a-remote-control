@@ -5,6 +5,11 @@
 #include "py32f0xx_msp.h"
 #include "xl2400.h"
 
+/*
+ * [0:5]: Analog channel 1 - 6
+ * [6]:   Key 1 - 8
+*/ 
+uint8_t pad_state[7];
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
@@ -14,6 +19,7 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 int main(void)
 {
   uint16_t i = 0;
+  uint8_t crc;
 
   BSP_RCC_HSI_PLL48MConfig();
 
@@ -59,8 +65,25 @@ int main(void)
     i++;
     if (XL2400_Rx() & XL2400_FLAG_RX_DR)
     {
-      SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X\r\n", 
-        i, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6));
+      
+      SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X %02X ", 
+        i, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
+      // CRC check
+      crc = 0;
+      for (i = 0; i < XL2400_PLOAD_WIDTH - 1; i++)
+      {
+        crc += *(xbuf + i);
+      }
+      if (crc != *(xbuf + XL2400_PLOAD_WIDTH - 1))
+      {
+        SEGGER_RTT_WriteString(0, "CRC Error\r\n");
+      }
+      else
+      {
+        SEGGER_RTT_WriteString(0, "CRC OK\r\n");
+        // Store received data
+        memcpy(pad_state, xbuf, 7);
+      }
       i = 0;
     }
     LL_mDelay(10);
