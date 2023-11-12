@@ -28,7 +28,6 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
 {
-  uint8_t i;
   BSP_RCC_HSI_PLL48MConfig();
 
   DEBUG_PRINTF("Remote Control: Controller\r\nClock: %ld\r\n", SystemCoreClock);
@@ -72,13 +71,15 @@ int main(void)
   /* Infinite loop */
   while(1)
   {
-    for (i = 0; i < 8; i++)
+#if DEBUG == 1
+    for (uint8_t i = 0; i < 8; i++)
     {
       DEBUG_PRINTF("%02X ", pad_state[i]);
     }
     DEBUG_PRINT_STRING("\r\n");
+#endif
     DRV_Display_Update(pad_state);
-    LL_mDelay(100);
+    LL_mDelay(50);
   }
 }
 

@@ -6,6 +6,7 @@ const uint8_t open[6] = {0xFF, 0x01, 0x01, 0x01, 0x01, 0xFF};
 const uint8_t body[6] = {0xFF, 0x00, 0x00, 0x00, 0x00, 0xFF};
 const uint8_t close[6] = {0xFF, 0x80, 0x80, 0x80, 0x80, 0xFF};
 
+static void DRV_ui8toa(uint8_t value, char *sp, uint8_t width);
 static void DRV_DrawChar(char ch, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert);
 static void DRV_DrawRepeat(uint8_t symbol, uint8_t width, uint8_t offset, uint8_t colorInvert);
 static void DRV_DrawBytes(uint8_t *pData, uint8_t size, int8_t offset, uint8_t colorInvert);
@@ -14,7 +15,7 @@ static void DRV_DrawVertiBar(uint8_t column, uint8_t offset, uint8_t size);
 static void DRV_DrawKeyState(uint8_t key_state);
 static void DRV_DrawHorizBarCursor(uint8_t page, uint8_t column, uint8_t value, uint8_t barWidth, uint8_t cursorWidth, uint8_t direction);
 static void DRV_DrawVertiBarCursor(uint8_t column, uint8_t offset, uint8_t size, uint8_t value, uint8_t barHeight, uint8_t direction);
-
+static void DRV_DrawNumber(uint8_t page, uint8_t column, uint8_t num);
 
 void DRV_Display_Reset(void)
 {
@@ -24,16 +25,16 @@ void DRV_Display_Reset(void)
 
 void DRV_Display_Init(void)
 {
-  DRV_DrawHorizBar(0, 10, 50); // HorizBar1
-  DRV_DrawHorizBar(0, 65, 50); // HorizBar2
+  DRV_DrawHorizBar(0, 10, 50); // Horizontal Bar1
+  DRV_DrawHorizBar(0, 65, 50); // Horizontal Bar2
 
-  DRV_DrawHorizBar(7, 0, 60);  // HorizBar3
-  DRV_DrawHorizBar(7, 65, 60); // HorizBar4
+  DRV_DrawHorizBar(7, 0, 60);  // Horizontal Bar3
+  DRV_DrawHorizBar(7, 65, 60); // Horizontal Bar4
 
-  DRV_DrawVertiBar(0, 1, 52);
-  DRV_DrawVertiBar(121, 1, 52);
+  DRV_DrawVertiBar(0, 1, 52);  // Vertical Bar1
+  DRV_DrawVertiBar(121, 1, 52);// Vertical Bar2
 
-  DRV_DrawHorizBar(6, 8, 10);
+  DRV_DrawHorizBar(6, 8, 10);  // Key bars
   DRV_DrawHorizBar(6, 22, 10);
   DRV_DrawHorizBar(6, 36, 10);
   DRV_DrawHorizBar(6, 50, 10);
@@ -59,6 +60,22 @@ void DRV_Display_Update(uint8_t *state)
   DRV_DrawVertiBarCursor(0, 1, 52, *(state + 0), 4, 0);
   DRV_DrawVertiBar(121, 1, 52);
   DRV_DrawVertiBarCursor(121, 1, 52, *(state + 3), 4, 1);
+
+  DRV_DrawNumber(1, 10, *(state + 4));
+  DRV_DrawNumber(1, 100, *(state + 5));
+
+  DRV_DrawNumber(4, 10, *(state + 0));
+  DRV_DrawNumber(4, 100, *(state + 3));
+
+  DRV_DrawNumber(5, 10, *(state + 1));
+  DRV_DrawNumber(5, 100, *(state + 2));
+}
+
+static void DRV_DrawNumber(uint8_t page, uint8_t column, uint8_t num)
+{
+  char str[3];
+  DRV_ui8toa(num, str, 3);
+  DRV_PutChars(page, column, str, 3, &Font_5x7, 6, 0, 1, 0);
 }
 
 static void DRV_DrawHorizBarCursor(uint8_t page, uint8_t column, uint8_t value, uint8_t barWidth, uint8_t cursorWidth, uint8_t direction)
@@ -170,6 +187,15 @@ void DRV_PutChar(uint8_t page, uint8_t column, char ch, FontDef_t* font, uint8_t
   DRV_DrawChar(ch, font, charWidth, xOffset, yOffset, colorInvert);
 }
 
+void DRV_PutChars(uint8_t page, uint8_t column, char *chars, uint8_t len, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert)
+{
+  ST7567_SetCursor(page, column);
+  while (len--)
+  {
+    DRV_DrawChar(*(chars++), font, charWidth, xOffset, yOffset, colorInvert);
+  }
+}
+
 void DRV_PutString(uint8_t page, uint8_t column, char *str, FontDef_t* font, uint8_t charWidth, uint8_t xOffset, uint8_t yOffset, uint8_t colorInvert)
 {
   uint8_t ch;
@@ -217,4 +243,26 @@ static void DRV_DrawBytes(uint8_t *pData, uint8_t size, int8_t offset, uint8_t c
     ch = colorInvert? ~ch : ch;
     ST7567_TransmitByte(ch);
   }
+}
+
+static void DRV_ui8toa(uint8_t value, char *sp, uint8_t width)
+{
+    char tmp[width];
+    char *tp = tmp;
+    int i = width;
+    while(i--) *(tp++) = ' ';
+
+    tp = tmp;
+    while (value || tp == tmp)
+    {
+        i = value % 10;
+        value /= 10;
+        *tp++ = i + '0';
+    }
+    i = width;
+    tp = tmp + width - 1;
+    while(i--)
+    {
+      *sp++ = *tp--;
+    }
 }
