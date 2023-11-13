@@ -21,7 +21,7 @@ FLASH_PROGRM	?= jlink
 
 ##### Toolchains #######
 
-ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-12.3.rel1-x86_64-arm-none-eabi/bin
+ARM_TOOCHAIN	?= /opt/gcc-arm/arm-gnu-toolchain-12.2.rel1-x86_64-arm-none-eabi/bin
 
 # path to JLinkExe
 JLINKEXE		?= /opt/SEGGER/JLink/JLinkExe
@@ -31,13 +31,19 @@ PYOCD_EXE		?= pyocd
 ##### Paths ############
 
 # C source folders
-CDIRS	:= Hardware \
+CDIRS	:= \
 		Apps/RemoteController/Driver \
 		Apps/RemoteController/User
 		
 
 # C source files (if there are any single ones)
-CFILES := 
+CFILES := \
+		Hardware/74hc165.c \
+		Hardware/fonts.c \
+		Hardware/SEGGER_RTT_printf.c \
+		Hardware/SEGGER_RTT.c \
+		Hardware/st7567.c \
+		Hardware/xl2400.c
 
 # ASM source folders
 ADIRS	:= Apps/RemoteController/User

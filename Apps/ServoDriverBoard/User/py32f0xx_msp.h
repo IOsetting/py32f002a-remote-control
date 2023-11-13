@@ -48,19 +48,6 @@ extern "C" {
 // SPI TxRx
 #define XL2400_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
-/***************** 74HC165 *****************/
-
-// PB6
-#define HC165_LD_LOW            LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
-#define HC165_LD_HIGH           LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
-// PA6
-#define HC165_SCK_LOW           LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define HC165_SCK_HIGH          LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6)
-// PA7
-#define HC165_DATA_READ         LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_7)
-// NOP
-#define HC165_NOP               __NOP()
-
 /***************** 74HC595 *****************/
 
 // PB6: Storage register clock, RCLK or STCP

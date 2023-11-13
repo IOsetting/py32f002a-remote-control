@@ -61,20 +61,6 @@ extern "C" {
 // NOP
 #define HC165_NOP               __NOP()
 
-/***************** 74HC595 *****************/
-
-// PB6: Storage register clock, RCLK or STCP
-#define HC595_STCP_LOW          LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_6)
-#define HC595_STCP_HIGH         LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_6)
-// PA5: shift register clock, SRCLK or SHCP
-#define HC595_SRCLK_LOW         LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_6)
-#define HC595_SRCLK_HIGH        LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_6) 
-// PA4: serial input, SER or DS
-#define HC595_DS_LOW            LL_GPIO_ResetOutputPin(GPIOA, LL_GPIO_PIN_4)
-#define HC595_DS_HIGH           LL_GPIO_SetOutputPin(GPIOA, LL_GPIO_PIN_4)
-// NOP
-#define HC595_NOP               __NOP()
-
 
 
 void MSP_GPIO_Init(void);
