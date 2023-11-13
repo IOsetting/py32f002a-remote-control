@@ -38,7 +38,7 @@ CDIRS	:= \
 
 # C source files (if there are any single ones)
 CFILES := \
-		Hardware/74hc595.C \
+		Hardware/74hc595.c \
 		Hardware/SEGGER_RTT_printf.c \
 		Hardware/SEGGER_RTT.c \
 		Hardware/st7567.c \

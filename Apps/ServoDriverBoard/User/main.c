@@ -4,7 +4,7 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "xl2400.h"
-#include "74hc595.h"
+#include "drv_lsio.h"
 
 /*
  * [0:5]: Analog channel 1 - 6
@@ -19,7 +19,7 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
 {
-  uint16_t i = 0;
+  uint16_t i = 0, j = 0;
   uint8_t crc;
 
   BSP_RCC_HSI_PLL48MConfig();
@@ -44,6 +44,7 @@ int main(void)
 
   MSP_GPIO_Init();
   MSP_SPI_Init();
+  MSP_TIM1_Config();
 
   while (XL2400_SPI_Test() == ERROR)
   {
@@ -59,15 +60,17 @@ int main(void)
   XL2400_SetRxAddress(TX_ADDRESS);
   XL2400_WakeUp();
   XL2400_SetRxMode();
+
+  DRV_LSIO_Init();
   
   /* Infinite loop */
   while(1)
   {
-    i++;
+    j++;
     if (XL2400_Rx() & XL2400_FLAG_RX_DR)
     {
       SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X %02X ", 
-        i, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
+        j, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
       // CRC check
       crc = 0;
       for (i = 0; i < XL2400_PLOAD_WIDTH - 1; i++)
@@ -84,12 +87,35 @@ int main(void)
         // Store received data
         memcpy(pad_state, xbuf, 7);
       }
-      i = 0;
+
+      // Keys
+      for (i = 8; i--;)
+      {
+        if (*(pad_state + 6) & (1 << i))
+        {
+          DRV_LSIO_SetDuty(i, PWM_PERIOD, 0xFF);
+        }
+        else
+        {
+          DRV_LSIO_SetDuty(i, 0, 0xFF);
+        }
+      }
+      // Analog channels
+      for (i = 0; i < 6; i++)
+      {
+        DRV_LSIO_SetDuty(8 + i, *(xbuf + i), 0xFF);
+      }
+
+      j = 0;
     }
 
-    HC595_WriteByte(*(pad_state + 6));
     LL_mDelay(10);
   }
+}
+
+void APP_TIM1UpdateCallback(void)
+{
+  DRV_LSIO_Tick();
 }
 
 void APP_ErrorHandler(void)

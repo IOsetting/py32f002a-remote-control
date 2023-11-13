@@ -38,3 +38,12 @@ void PendSV_Handler(void)
 void SysTick_Handler(void)
 {
 }
+
+void TIM1_BRK_UP_TRG_COM_IRQHandler(void)
+{
+  if(LL_TIM_IsActiveFlag_UPDATE(TIM1) && LL_TIM_IsEnabledIT_UPDATE(TIM1))
+  {
+    LL_TIM_ClearFlag_UPDATE(TIM1);
+    APP_TIM1UpdateCallback();
+  }
+}

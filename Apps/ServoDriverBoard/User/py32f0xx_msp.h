@@ -63,9 +63,9 @@ extern "C" {
 #define HC595_NOP               __NOP()
 
 
-
 void MSP_GPIO_Init(void);
 void MSP_SPI_Init(void);
+void MSP_TIM1_Config(void);
 
 void MSP_FlashSetOptionBytes(void);
 uint8_t SPI_TxRxByte(uint8_t data);

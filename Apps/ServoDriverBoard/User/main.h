@@ -19,6 +19,16 @@ extern "C" {
     #define DEBUG_PRINT_STRING(__ARG1__)        SEGGER_RTT_WriteString(0, __ARG1__);
 #endif
 
+/* PWM frequency, the count of PWM interval periods per second */
+#define PWM_FREQUENCY 50
+/* The resolution of each duty cycle */
+#define PWM_PERIOD    30
+/* The count of 74hc595 */
+#define HC595_SIZE    2
+/* PWM channels, a multiple of 8 */
+#define PWM_CH_SIZE   (HC595_SIZE*8)
+
+
 #include "py32f0xx_ll_adc.h"
 #include "py32f0xx_ll_bus.h"
 #include "py32f0xx_ll_cortex.h"
@@ -35,6 +45,7 @@ extern "C" {
 
 
 void APP_ErrorHandler(void);
+void APP_TIM1UpdateCallback(void);
 
 #ifdef __cplusplus
 }
