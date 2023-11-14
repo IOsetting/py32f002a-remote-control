@@ -2,8 +2,12 @@
  * Low Speed IO
  * *************
 */
+
 #include "drv_lsio.h"
+#include "py32f0xx_msp.h"
 #include "74hc595.h"
+#include <string.h>
+
 
 uint8_t hc595_state[HC595_SIZE], pwm_duty[PWM_CH_SIZE], pwm_duty_pre[PWM_CH_SIZE], pwm_counter = 0;
 

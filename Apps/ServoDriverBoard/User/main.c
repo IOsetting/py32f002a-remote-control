@@ -69,8 +69,10 @@ int main(void)
     j++;
     if (XL2400_Rx() & XL2400_FLAG_RX_DR)
     {
+#if DEBUG == 1
       SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X %02X ", 
         j, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
+#endif
       // CRC check
       crc = 0;
       for (i = 0; i < XL2400_PLOAD_WIDTH - 1; i++)
@@ -79,11 +81,11 @@ int main(void)
       }
       if (crc != *(xbuf + XL2400_PLOAD_WIDTH - 1))
       {
-        SEGGER_RTT_WriteString(0, "CRC Error\r\n");
+        DEBUG_PRINT_STRING("CRC Error\r\n");
       }
       else
       {
-        SEGGER_RTT_WriteString(0, "CRC OK\r\n");
+        DEBUG_PRINT_STRING("CRC OK\r\n");
         // Store received data
         memcpy(pad_state, xbuf, 7);
       }
@@ -93,7 +95,7 @@ int main(void)
       {
         if (*(pad_state + 6) & (1 << i))
         {
-          DRV_LSIO_SetDuty(i, PWM_PERIOD, 0xFF);
+          DRV_LSIO_SetDuty(i, 0xFF, 0xFF);
         }
         else
         {

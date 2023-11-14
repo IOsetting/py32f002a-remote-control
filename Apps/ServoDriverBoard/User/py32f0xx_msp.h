@@ -62,6 +62,18 @@ extern "C" {
 // NOP
 #define HC595_NOP               __NOP()
 
+/***************** PWM(74HC595) *****************/
+
+/* PWM frequency, the count of PWM interval periods per second */
+#define PWM_FREQUENCY 50
+/* The resolution of each duty cycle */
+#define PWM_PERIOD    30
+/* The number of 74hc595 */
+#define HC595_SIZE    2
+/* PWM channels, a multiple of 8 */
+#define PWM_CH_SIZE   (HC595_SIZE*8)
+
+
 
 void MSP_GPIO_Init(void);
 void MSP_SPI_Init(void);

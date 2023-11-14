@@ -16,7 +16,7 @@
 #define __FW_74HC595_H__
 
 #include "py32f0xx_msp.h"
-#include "string.h"
+#include <string.h>
 
 /*
  * Required Pin Definitions:
