@@ -4,13 +4,18 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "xl2400.h"
-#include "drv_lsio.h"
+#include "drv_lspwm.h"
+#include "drv_servo.h"
 
 /*
  * [0:5]: Analog channel 1 - 6
  * [6]:   Key 1 - 8
 */ 
 uint8_t pad_state[7];
+
+uint8_t servo_pwm_channel[8];
+
+const uint8_t DIRECTION[4] = {0, 0, 0, 0};
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
@@ -61,7 +66,7 @@ int main(void)
   XL2400_WakeUp();
   XL2400_SetRxMode();
 
-  DRV_LSIO_Init();
+  DRV_LSPWM_Init();
   
   /* Infinite loop */
   while(1)
@@ -95,17 +100,19 @@ int main(void)
       {
         if (*(pad_state + 6) & (1 << i))
         {
-          DRV_LSIO_SetDuty(i, 0xFF, 0xFF);
+          DRV_LSPWM_SetDuty(i, 0xFF, 0xFF);
         }
         else
         {
-          DRV_LSIO_SetDuty(i, 0, 0xFF);
+          DRV_LSPWM_SetDuty(i, 0, 0xFF);
         }
       }
-      // Analog channels
-      for (i = 0; i < 6; i++)
+      // Convert Analog channels (X:A1, Y:A0, Z:A2) to PWM
+      DRV_SERVO_AnalogConvert(*(xbuf + 1), *(xbuf), *(xbuf + 2), (uint8_t *)DIRECTION, servo_pwm_channel);
+      // Update PWM channels
+      for (i = 0; i < 8; i++)
       {
-        DRV_LSIO_SetDuty(8 + i, *(xbuf + i), 0xFF);
+        DRV_LSPWM_SetDuty(8 + i, *(servo_pwm_channel + i), 0xFF);
       }
 
       j = 0;
@@ -117,7 +124,7 @@ int main(void)
 
 void APP_TIM1UpdateCallback(void)
 {
-  DRV_LSIO_Tick();
+  DRV_LSPWM_Tick();
 }
 
 void APP_ErrorHandler(void)

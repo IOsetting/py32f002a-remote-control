@@ -1,9 +1,9 @@
 /***************
- * Low Speed IO
+ * Low Speed PWM
  * *************
 */
 
-#include "drv_lsio.h"
+#include "drv_lspwm.h"
 #include "py32f0xx_msp.h"
 #include "74hc595.h"
 #include <string.h>
@@ -11,7 +11,7 @@
 
 uint8_t hc595_state[HC595_SIZE], pwm_duty[PWM_CH_SIZE], pwm_duty_pre[PWM_CH_SIZE], pwm_counter = 0;
 
-void DRV_LSIO_Init(void)
+void DRV_LSPWM_Init(void)
 {
   uint8_t i;
   for (i = 0; i < PWM_CH_SIZE; i++)
@@ -25,12 +25,12 @@ void DRV_LSIO_Init(void)
  * channel: 0 ~ PWM_CH_SIZE - 1
  * numerator/denominator: duty
 */
-void DRV_LSIO_SetDuty(uint8_t channel, uint8_t numerator, uint8_t denominator)
+void DRV_LSPWM_SetDuty(uint8_t channel, uint8_t numerator, uint8_t denominator)
 {
   pwm_duty_pre[channel] = numerator * PWM_PERIOD / denominator;
 }
 
-void DRV_LSIO_Tick(void)
+void DRV_LSPWM_Tick(void)
 {
   uint8_t i, hc595_idx, mask;
 
