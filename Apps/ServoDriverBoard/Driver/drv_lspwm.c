@@ -27,7 +27,7 @@ void DRV_LSPWM_Init(void)
 */
 void DRV_LSPWM_SetDuty(uint8_t channel, uint8_t numerator, uint8_t denominator)
 {
-  pwm_duty_pre[channel] = numerator * PWM_PERIOD / denominator;
+  pwm_duty_pre[channel] = (uint8_t)(((uint16_t)numerator * PWM_PERIOD) / denominator);
 }
 
 void DRV_LSPWM_Tick(void)
