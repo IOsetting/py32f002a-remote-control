@@ -1,5 +1,5 @@
-#ifndef __BSP_BASE_H
-#define __BSP_BASE_H
+#ifndef __DRV_BASE_H
+#define __DRV_BASE_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,4 +13,4 @@ int itoa(int value, char *sp, int radix);
 }
 #endif
 
-#endif /* __BSP_BASE_H */
+#endif /* __DRV_BASE_H */

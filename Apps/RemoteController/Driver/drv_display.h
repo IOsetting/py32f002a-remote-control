@@ -1,5 +1,5 @@
-#ifndef __BSP_DISPLAY_H
-#define __BSP_DISPLAY_H
+#ifndef __DRV_DISPLAY_H
+#define __DRV_DISPLAY_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,4 +20,4 @@ void DRV_PutString(uint8_t page, uint8_t column, char *ch, FontDef_t* font, uint
 }
 #endif
 
-#endif /* __BSP_DISPLAY_H */
+#endif /* __DRV_DISPLAY_H */

@@ -4,7 +4,7 @@
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
 #include "drv_display.h"
-#include "xl2400.h"
+#include "drv_wireless.h"
 #include "74hc165.h"
 
 // 6-channel analog data
@@ -26,8 +26,6 @@ uint8_t wireless_tx = 0, wireless_tx_succ = 0;
 
 const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
-
-extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
 int main(void)
 {
@@ -61,19 +59,15 @@ int main(void)
   DRV_Display_Reset();
   DRV_Display_Init();
 
-  while (XL2400_SPI_Test() == ERROR)
+  while (DRV_Wireless_Test() == ERROR)
   {
     DEBUG_PRINT_STRING(" - check failed\r\n");
     LL_mDelay(1000);
   }
   DEBUG_PRINT_STRING(" - check passed\r\n");
 
-  XL2400_Init();
-  XL2400_SetPower(XL2400_RF_0DB);
-  XL2400_SetChannel(78);
-  XL2400_SetTxAddress(RX_ADDRESS);
-  XL2400_SetRxAddress(TX_ADDRESS);
-  XL2400_SetTxMode();
+  DRV_Wireless_Init(78, (uint8_t *)RX_ADDRESS, (uint8_t *)TX_ADDRESS);
+
   wireless_state[10] = 0;
 
   /* Infinite loop */
@@ -89,7 +83,7 @@ int main(void)
     DRV_Display_Update(pad_state);
     // Send
     wireless_tx++;
-    if (XL2400_Tx(pad_state, XL2400_PLOAD_WIDTH) == 0x20)
+    if (DRV_Wireless_Tx(pad_state) == 0x20)
     {
       wireless_tx_succ++;
     }
