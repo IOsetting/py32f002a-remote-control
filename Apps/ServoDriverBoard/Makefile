@@ -18,6 +18,9 @@ MCU_TYPE		= PY32F030x6
 ENABLE_PRINTF_FLOAT	?= n
 # Programmer, jlink or pyocd
 FLASH_PROGRM	?= jlink
+# Wireless part:
+#   XL2400, XN297L
+WIRELESS_PART	?= XL2400
 
 ##### Toolchains #######
 
@@ -34,15 +37,18 @@ PYOCD_EXE		?= pyocd
 CDIRS	:= \
 		Apps/ServoDriverBoard/Driver \
 		Apps/ServoDriverBoard/User
-		
 
 # C source files (if there are any single ones)
 CFILES := \
 		Hardware/74hc595.c \
 		Hardware/SEGGER_RTT_printf.c \
-		Hardware/SEGGER_RTT.c \
-		Hardware/st7567.c \
-		Hardware/xn297l.c
+		Hardware/SEGGER_RTT.c
+
+ifeq ($(WIRELESS_PART),XL2400)
+CFILES		+= Hardware/xl2400.c
+else ifeq ($(WIRELESS_PART),XN297L)
+CFILES		+= Hardware/xn297l.c
+endif
 
 # ASM source folders
 ADIRS	:= Apps/ServoDriverBoard/User
@@ -59,7 +65,7 @@ INCLUDES	:= Libraries/CMSIS/Core/Include \
 ##### Library Paths ############
 
 # Library flags
-LIB_FLAGS		= $(MCU_TYPE)
+LIB_FLAGS		= $(MCU_TYPE) USE_$(WIRELESS_PART)
 # JLink device (Uppercases)
 JLINK_DEVICE	?= $(shell echo $(MCU_TYPE) | tr '[:lower:]' '[:upper:]')
 # PyOCD device (Lowercases)

@@ -16,7 +16,6 @@
 #define __FW_XN297L_H__
 
 #include "py32f0xx_msp.h"
-#include "string.h"
 
 #define XN297L_PLOAD_WIDTH         8   // Payload width
 

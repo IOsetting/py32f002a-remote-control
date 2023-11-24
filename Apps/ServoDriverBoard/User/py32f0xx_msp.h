@@ -18,11 +18,6 @@ extern "C" {
 #include "main.h"
 
 
-#define HW_WIRELESS         HW_XN297L
-
-#define HW_XL2400           0
-#define HW_XN297L           1
-
 /***************** ST7567 *****************/
 
 // CSN: PB3
@@ -44,7 +39,7 @@ extern "C" {
 // SPI TxRx
 #define ST7567_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
-#if HW_WIRELESS == HW_XL2400
+#ifdef USE_XL2400
 
 /***************** XL2400 *****************/
 
@@ -56,7 +51,9 @@ extern "C" {
 // SPI TxRx
 #define XL2400_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
-#elif HW_WIRELESS == HW_XN297L
+#endif
+
+#ifdef USE_XN297L
 
 /***************** XN297L *****************/
 

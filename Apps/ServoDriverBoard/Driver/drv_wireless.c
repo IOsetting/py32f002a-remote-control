@@ -1,7 +1,8 @@
 #include "drv_wireless.h"
 #include "py32f0xx_msp.h"
+#include "string.h"
 
-#if HW_WIRELESS == HW_XL2400
+#ifdef USE_XL2400
 
 #include "xl2400.h"
 
@@ -58,7 +59,10 @@ ErrorStatus DRV_Wireless_Rx(uint8_t *data)
   }
 }
 
-#elif HW_WIRELESS == HW_XN297L
+#endif
+
+
+#ifdef USE_XN297L
 
 #include "xn297l.h"
 

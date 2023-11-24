@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <stdio.h>
 #include "xn297l.h"
 
 const uint8_t 
@@ -116,7 +115,6 @@ ErrorStatus XN297L_SPI_Test(void)
     XN297L_WriteFromBuf(XN297L_CMD_W_REGISTER | XN297L_REG_TX_ADDR, ptr, 5);
     XN297L_ReadToBuf(XN297L_CMD_R_REGISTER | XN297L_REG_TX_ADDR, xbuf, 5);
     for (i = 0; i < 5; i++) {
-        printf("%02X", *(xbuf + i));
         if (*(xbuf + i) != *ptr++) return ERROR;
     }
     return SUCCESS;
@@ -196,7 +194,6 @@ uint8_t XN297L_TxData(uint8_t *ucPayload, uint8_t length)
         // If TX successful or retry timeout, exit
         if ((status & (XN297L_FLAG_MAX_RT | XN297L_FLAG_TX_DS)) != 0)
         {
-            //printf(" %d %02x\r\n", y, status);
             break;
         }
     }
