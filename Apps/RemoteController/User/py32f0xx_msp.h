@@ -17,6 +17,11 @@ extern "C" {
 
 #include "main.h"
 
+#define HW_WIRELESS         HW_XL2400
+
+#define HW_XL2400           0
+#define HW_XN297L           1
+
 /***************** ST7567 *****************/
 
 // CSN: PB3
@@ -38,6 +43,8 @@ extern "C" {
 // SPI TxRx
 #define ST7567_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
+#if HW_WIRELESS == HW_XL2400
+
 /***************** XL2400 *****************/
 
 // NSS:PB2
@@ -47,6 +54,20 @@ extern "C" {
 #define XL2400_DELAY(__MS__)    LL_mDelay(__MS__)
 // SPI TxRx
 #define XL2400_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
+
+#elif HW_WIRELESS == HW_XN297L
+
+/***************** XN297L *****************/
+
+// NSS:PB2
+#define XN297L_CSN_LOW          LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_2)
+#define XN297L_CSN_HIGH         LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_2)
+// SPI TxRx
+#define XN297L_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
+// NOP
+#define XN297L_NOP               __NOP()
+
+#endif
 
 /***************** 74HC165 *****************/
 

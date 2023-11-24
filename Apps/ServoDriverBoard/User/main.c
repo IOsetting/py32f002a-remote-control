@@ -3,7 +3,7 @@
 #include "main.h"
 #include "py32f0xx_bsp_clock.h"
 #include "py32f0xx_msp.h"
-#include "xl2400.h"
+#include "drv_wireless.h"
 #include "drv_lspwm.h"
 #include "drv_servo.h"
 
@@ -17,15 +17,12 @@ uint8_t servo_pwm_channel[8];
 
 const uint8_t DIRECTION[4] = {0, 0, 0, 0};
 
-const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
-
-extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
+const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
 
 int main(void)
 {
   uint16_t i = 0, j = 0;
-  uint8_t crc;
 
   BSP_RCC_HSI_PLL48MConfig();
 
@@ -51,20 +48,14 @@ int main(void)
   MSP_SPI_Init();
   MSP_TIM1_Config();
 
-  while (XL2400_SPI_Test() == ERROR)
+  while (DRV_Wireless_Test() == ERROR)
   {
     DEBUG_PRINT_STRING(" - check failed\r\n");
     LL_mDelay(1000);
   }
   DEBUG_PRINT_STRING(" - check passed\r\n");
 
-  XL2400_Init();
-  XL2400_SetPower(XL2400_RF_0DB);
-  XL2400_SetChannel(77);
-  XL2400_SetTxAddress(RX_ADDRESS);
-  XL2400_SetRxAddress(TX_ADDRESS);
-  XL2400_WakeUp();
-  XL2400_SetRxMode();
+  DRV_Wireless_Init(77, (uint8_t *)RX_ADDRESS, (uint8_t *)TX_ADDRESS);
 
   DRV_LSPWM_Init();
   
@@ -72,29 +63,12 @@ int main(void)
   while(1)
   {
     j++;
-    if (XL2400_Rx() & XL2400_FLAG_RX_DR)
+    if (DRV_Wireless_Rx(pad_state) == SUCCESS)
     {
 #if DEBUG == 1
-      SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X %02X ", 
-        j, *xbuf, *(xbuf + 1), *(xbuf + 2), *(xbuf + 3), *(xbuf + 4), *(xbuf + 5), *(xbuf + 6), *(xbuf + 7));
+      SEGGER_RTT_printf(0, "%03d %02X %02x %02x %02x %02x %02x %02X ", 
+        j, *pad_state, *(pad_state + 1), *(pad_state + 2), *(pad_state + 3), *(pad_state + 4), *(pad_state + 5), *(pad_state + 6));
 #endif
-      // CRC check
-      crc = 0;
-      for (i = 0; i < XL2400_PLOAD_WIDTH - 1; i++)
-      {
-        crc += *(xbuf + i);
-      }
-      if (crc != *(xbuf + XL2400_PLOAD_WIDTH - 1))
-      {
-        DEBUG_PRINT_STRING("CRC Error\r\n");
-      }
-      else
-      {
-        DEBUG_PRINT_STRING("CRC OK\r\n");
-        // Store received data
-        memcpy(pad_state, xbuf, 7);
-      }
-
       // Keys
       for (i = 8; i--;)
       {
@@ -108,7 +82,7 @@ int main(void)
         }
       }
       // Convert Analog channels (X:A1, Y:A0, Z:A2) to PWM
-      DRV_SERVO_AnalogConvert(*(xbuf + 1), *(xbuf), *(xbuf + 2), (uint8_t *)DIRECTION, servo_pwm_channel);
+      DRV_SERVO_AnalogConvert(*(pad_state + 1), *(pad_state), *(pad_state + 2), (uint8_t *)DIRECTION, servo_pwm_channel);
       // Update PWM channels
       for (i = 0; i < 8; i++)
       {

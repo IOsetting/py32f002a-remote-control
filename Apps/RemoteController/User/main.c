@@ -24,8 +24,8 @@ uint8_t pad_state[8];
 uint8_t wireless_state[11];
 uint8_t wireless_tx = 0, wireless_tx_succ = 0;
 
-const uint8_t TX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
-const uint8_t RX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
+const uint8_t RX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
+const uint8_t TX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
 
 int main(void)
 {
@@ -94,7 +94,7 @@ int main(void)
       wireless_tx = 0;
       wireless_tx_succ = 0;
     }
-    LL_mDelay(50);
+    LL_mDelay(20);
   }
 }
 
