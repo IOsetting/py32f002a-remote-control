@@ -55,7 +55,7 @@ int main(void)
   }
   DEBUG_PRINT_STRING(" - check passed\r\n");
 
-  DRV_Wireless_Init(77, (uint8_t *)RX_ADDRESS, (uint8_t *)TX_ADDRESS);
+  DRV_Wireless_Init(78, (uint8_t *)RX_ADDRESS, (uint8_t *)TX_ADDRESS);
 
   DRV_LSPWM_Init();
   

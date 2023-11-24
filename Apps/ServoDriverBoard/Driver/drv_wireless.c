@@ -18,14 +18,14 @@ void DRV_Wireless_Init(uint8_t channel, uint8_t *rx_addr, uint8_t *tx_addr)
   XL2400_SetRxMode();
 }
 
-uint8_t DRV_Wireless_Tx(uint8_t *data)
-{
-  return XL2400_Tx(data, XL2400_PLOAD_WIDTH);
-}
-
 ErrorStatus DRV_Wireless_Test(void)
 {
   return XL2400_SPI_Test();
+}
+
+uint8_t DRV_Wireless_Tx(uint8_t *data)
+{
+  return XL2400_Tx(data, XL2400_PLOAD_WIDTH);
 }
 
 ErrorStatus DRV_Wireless_Rx(uint8_t *data)
@@ -62,13 +62,20 @@ ErrorStatus DRV_Wireless_Rx(uint8_t *data)
 
 #include "xn297l.h"
 
+extern uint8_t xbuf[XN297L_PLOAD_WIDTH + 1];
+
 void DRV_Wireless_Init(uint8_t channel, uint8_t *rx_addr, uint8_t *tx_addr)
 {
   XN297L_Init();
   XN297L_SetChannel(channel);
-  XN297L_SetTxAddress(rx_addr);
-  XN297L_SetRxAddress(tx_addr);
-  XN297L_SetTxMode();
+  XN297L_SetRxAddress(rx_addr);
+  XN297L_SetTxAddress(tx_addr);
+  XN297L_SetRxMode();
+}
+
+ErrorStatus DRV_Wireless_Test(void)
+{
+  return XN297L_SPI_Test();
 }
 
 uint8_t DRV_Wireless_Tx(uint8_t *data)
@@ -76,9 +83,34 @@ uint8_t DRV_Wireless_Tx(uint8_t *data)
   return XN297L_TxData(data, XN297L_PLOAD_WIDTH);
 }
 
-ErrorStatus DRV_Wireless_Test(void)
+ErrorStatus DRV_Wireless_Rx(uint8_t *data)
 {
-  return XN297L_SPI_Test();
+  uint8_t crc, i;
+
+  if (XN297L_DumpRxData() & XN297L_FLAG_RX_DR)
+  {
+    // CRC check
+    crc = 0;
+    for (i = 0; i < XN297L_PLOAD_WIDTH - 1; i++)
+    {
+      crc += *(xbuf + i);
+    }
+    if (crc != *(xbuf + XN297L_PLOAD_WIDTH - 1))
+    {
+      DEBUG_PRINT_STRING("CRC Error\r\n");
+    }
+    else
+    {
+      DEBUG_PRINT_STRING("CRC OK\r\n");
+      // Store received data
+      memcpy(data, xbuf, 7);
+    }
+    return SUCCESS;
+  }
+  else
+  {
+    return ERROR;
+  }
 }
 
 #endif

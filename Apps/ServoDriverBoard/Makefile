@@ -42,7 +42,7 @@ CFILES := \
 		Hardware/SEGGER_RTT_printf.c \
 		Hardware/SEGGER_RTT.c \
 		Hardware/st7567.c \
-		Hardware/xl2400.c
+		Hardware/xn297l.c
 
 # ASM source folders
 ADIRS	:= Apps/ServoDriverBoard/User

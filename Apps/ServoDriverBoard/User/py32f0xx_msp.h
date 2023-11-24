@@ -18,7 +18,7 @@ extern "C" {
 #include "main.h"
 
 
-#define HW_WIRELESS         HW_XL2400
+#define HW_WIRELESS         HW_XN297L
 
 #define HW_XL2400           0
 #define HW_XN297L           1
