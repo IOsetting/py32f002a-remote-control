@@ -112,15 +112,44 @@ void MSP_TIM1_Config(void)
   TIM1CountInit.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
   TIM1CountInit.CounterMode         = LL_TIM_COUNTERMODE_UP;
   TIM1CountInit.Prescaler           = 8000-1;
-  TIM1CountInit.Autoreload          = (SystemCoreClock / 8000) / (PWM_FREQUENCY * PWM_PERIOD) -1;
+  /* PWM frequency = 48,000,000 / (8000 * 120) = 50 */
+  TIM1CountInit.Autoreload          = 120-1;
   TIM1CountInit.RepetitionCounter   = 0;
   LL_TIM_Init(TIM1,&TIM1CountInit);
 
-  LL_TIM_EnableIT_UPDATE(TIM1);
+  LL_TIM_EnableAllOutputs(TIM1);
   LL_TIM_EnableCounter(TIM1);
+}
 
-  NVIC_EnableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
-  NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn, 1);
+void MSP_TIM1_PWMConfig(void)
+{
+  LL_GPIO_InitTypeDef TIM1CH1MapInit = {0};
+  LL_TIM_OC_InitTypeDef TIM_OC_Initstruct = {0};
+
+  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
+
+  /* PA0/PA1/PA3 -> TIM1_CH3/TIM1_CH4/TIM1_CH1 */
+  TIM1CH1MapInit.Pin = LL_GPIO_PIN_0 | LL_GPIO_PIN_1 | LL_GPIO_PIN_3;
+  TIM1CH1MapInit.Mode = LL_GPIO_MODE_ALTERNATE;
+  TIM1CH1MapInit.Alternate = LL_GPIO_AF_13;
+  LL_GPIO_Init(GPIOA, &TIM1CH1MapInit);
+  /* PB3 -> TIM1_CH2 */
+  TIM1CH1MapInit.Pin = LL_GPIO_PIN_3;
+  TIM1CH1MapInit.Mode = LL_GPIO_MODE_ALTERNATE;
+  TIM1CH1MapInit.Alternate = LL_GPIO_AF_1;
+  LL_GPIO_Init(GPIOB, &TIM1CH1MapInit);
+
+  TIM_OC_Initstruct.OCMode = LL_TIM_OCMODE_PWM2;
+  TIM_OC_Initstruct.OCState = LL_TIM_OCSTATE_ENABLE;
+  TIM_OC_Initstruct.OCPolarity = LL_TIM_OCPOLARITY_HIGH;
+  TIM_OC_Initstruct.OCIdleState = LL_TIM_OCIDLESTATE_LOW;
+
+  /* Set channel compare values */
+  TIM_OC_Initstruct.CompareValue = 0;
+  LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH1, &TIM_OC_Initstruct);
+  LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH2, &TIM_OC_Initstruct);
+  LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH3, &TIM_OC_Initstruct);
+  LL_TIM_OC_Init(TIM1, LL_TIM_CHANNEL_CH4, &TIM_OC_Initstruct);
 }
 
 void MSP_TIM14_Config(void)
@@ -132,7 +161,7 @@ void MSP_TIM14_Config(void)
   TIM1CountInit.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
   TIM1CountInit.CounterMode         = LL_TIM_COUNTERMODE_UP;
   TIM1CountInit.Prescaler           = 8000-1;
-  TIM1CountInit.Autoreload          = (SystemCoreClock / 8000) / (PWM_FREQUENCY * PWM_PERIOD) -1;
+  TIM1CountInit.Autoreload          = (SystemCoreClock / 8000) / (LSPWM_FREQUENCY * LSPWM_PERIOD) -1;
   TIM1CountInit.RepetitionCounter   = 0;
   LL_TIM_Init(TIM14, &TIM1CountInit);
 

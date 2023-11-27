@@ -5,6 +5,7 @@
 #include "py32f0xx_msp.h"
 #include "drv_wireless.h"
 #include "drv_lspwm.h"
+#include "drv_hspwm.h"
 #include "drv_servo.h"
 
 /*
@@ -46,6 +47,9 @@ int main(void)
 
   MSP_GPIO_Init();
   MSP_SPI_Init();
+  MSP_TIM1_Config();
+  MSP_TIM1_PWMConfig();
+
   MSP_TIM14_Config();
 
   while (DRV_Wireless_Test() == ERROR)
@@ -87,6 +91,23 @@ int main(void)
       for (i = 0; i < 8; i++)
       {
         DRV_LSPWM_SetDuty(8 + i, *(servo_pwm_channel + i), 0xFF);
+      }
+      // Update high speed PWM
+      if ((*(pad_state + 6) & (1 << 0)) == 0)
+      {
+        DRV_HSPWM_SetDutyCH1(1);
+      }
+      if ((*(pad_state + 6) & (1 << 1)) == 0)
+      {
+        DRV_HSPWM_SetDutyCH2(1);
+      }
+      if ((*(pad_state + 6) & (1 << 2)) == 0)
+      {
+        DRV_HSPWM_SetDutyCH3(1);
+      }
+      if ((*(pad_state + 6) & (1 << 3)) == 0)
+      {
+        DRV_HSPWM_SetDutyCH4(1);
       }
 
       j = 0;
