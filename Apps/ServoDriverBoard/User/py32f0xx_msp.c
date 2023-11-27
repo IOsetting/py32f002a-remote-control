@@ -108,7 +108,7 @@ void MSP_TIM1_Config(void)
   LL_TIM_InitTypeDef TIM1CountInit = {0};
 
   LL_APB1_GRP2_EnableClock(RCC_APBENR2_TIM1EN);
-  
+
   TIM1CountInit.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
   TIM1CountInit.CounterMode         = LL_TIM_COUNTERMODE_UP;
   TIM1CountInit.Prescaler           = 8000-1;
@@ -120,7 +120,27 @@ void MSP_TIM1_Config(void)
   LL_TIM_EnableCounter(TIM1);
 
   NVIC_EnableIRQ(TIM1_BRK_UP_TRG_COM_IRQn);
-  NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn,0);
+  NVIC_SetPriority(TIM1_BRK_UP_TRG_COM_IRQn, 1);
+}
+
+void MSP_TIM14_Config(void)
+{
+  LL_TIM_InitTypeDef TIM1CountInit = {0};
+
+  LL_APB1_GRP2_EnableClock(RCC_APBENR2_TIM14EN);
+
+  TIM1CountInit.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
+  TIM1CountInit.CounterMode         = LL_TIM_COUNTERMODE_UP;
+  TIM1CountInit.Prescaler           = 8000-1;
+  TIM1CountInit.Autoreload          = (SystemCoreClock / 8000) / (PWM_FREQUENCY * PWM_PERIOD) -1;
+  TIM1CountInit.RepetitionCounter   = 0;
+  LL_TIM_Init(TIM14, &TIM1CountInit);
+
+  LL_TIM_EnableIT_UPDATE(TIM14);
+  LL_TIM_EnableCounter(TIM14);
+
+  NVIC_EnableIRQ(TIM14_IRQn);
+  NVIC_SetPriority(TIM14_IRQn, 1);
 }
 
 void MSP_FlashSetOptionBytes(void)

@@ -46,7 +46,7 @@ int main(void)
 
   MSP_GPIO_Init();
   MSP_SPI_Init();
-  MSP_TIM1_Config();
+  MSP_TIM14_Config();
 
   while (DRV_Wireless_Test() == ERROR)
   {
@@ -94,11 +94,6 @@ int main(void)
 
     LL_mDelay(10);
   }
-}
-
-void APP_TIM1UpdateCallback(void)
-{
-  DRV_LSPWM_Tick();
 }
 
 void APP_ErrorHandler(void)

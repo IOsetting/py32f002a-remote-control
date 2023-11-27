@@ -36,7 +36,6 @@ extern "C" {
 
 
 void APP_ErrorHandler(void);
-void APP_TIM1UpdateCallback(void);
 
 #ifdef __cplusplus
 }
