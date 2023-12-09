@@ -8,10 +8,12 @@ extern "C" {
 #include "main.h"
 
 void DRV_HSPWM_Init(void);
-void DRV_HSPWM_SetDutyCH1(uint32_t duty);
-void DRV_HSPWM_SetDutyCH2(uint32_t duty);
-void DRV_HSPWM_SetDutyCH3(uint32_t duty);
-void DRV_HSPWM_SetDutyCH4(uint32_t duty);
+void DRV_HSPWM_SetDuty(uint8_t ch, uint32_t duty);
+/**
+ * step can be negative for decrement
+*/
+void DRV_HSPWM_IncreaseDuty(uint8_t ch, int8_t step);
+
 
 #ifdef __cplusplus
 }

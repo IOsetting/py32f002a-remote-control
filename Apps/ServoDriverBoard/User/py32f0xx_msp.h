@@ -83,6 +83,11 @@ extern "C" {
 
 /***************** HSPWM          *****************/
 
+/* PWM frequency, the count of PWM interval periods per second */
+#define HSPWM_FREQUENCY 50
+/* The resolution of each duty cycle */
+#define HSPWM_PERIOD    120
+/* PWM channels */
 #define HSPWM_CH_SIZE   8
 
 /***************** LSPWM(74HC595) *****************/
@@ -103,6 +108,8 @@ void MSP_GPIO_Init(void);
 void MSP_SPI_Init(void);
 void MSP_TIM1_Config(void);
 void MSP_TIM1_PWMConfig(void);
+void MSP_TIM3_Config(void);
+void MSP_TIM3_PWMConfig(void);
 void MSP_TIM14_Config(void);
 
 void MSP_FlashSetOptionBytes(void);

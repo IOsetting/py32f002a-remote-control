@@ -49,6 +49,8 @@ int main(void)
   MSP_SPI_Init();
   MSP_TIM1_Config();
   MSP_TIM1_PWMConfig();
+  MSP_TIM3_Config();
+  MSP_TIM3_PWMConfig();
 
   MSP_TIM14_Config();
 
@@ -95,19 +97,44 @@ int main(void)
       // Update high speed PWM
       if ((*(pad_state + 6) & (1 << 0)) == 0)
       {
-        DRV_HSPWM_SetDutyCH1(1);
+        DRV_HSPWM_IncreaseDuty(1, -1);
+        DRV_HSPWM_IncreaseDuty(2,  1);
       }
       if ((*(pad_state + 6) & (1 << 1)) == 0)
       {
-        DRV_HSPWM_SetDutyCH2(1);
+        DRV_HSPWM_IncreaseDuty(1,  1);
+        DRV_HSPWM_IncreaseDuty(2, -1);
       }
       if ((*(pad_state + 6) & (1 << 2)) == 0)
       {
-        DRV_HSPWM_SetDutyCH3(1);
+        DRV_HSPWM_IncreaseDuty(3, -1);
+        DRV_HSPWM_IncreaseDuty(4,  1);
       }
       if ((*(pad_state + 6) & (1 << 3)) == 0)
       {
-        DRV_HSPWM_SetDutyCH4(1);
+        DRV_HSPWM_IncreaseDuty(3,  1);
+        DRV_HSPWM_IncreaseDuty(4, -1);
+      }
+
+      if ((*(pad_state + 6) & (1 << 4)) == 0)
+      {
+        DRV_HSPWM_IncreaseDuty(5, -1);
+        DRV_HSPWM_IncreaseDuty(6,  1);
+      }
+      if ((*(pad_state + 6) & (1 << 5)) == 0)
+      {
+        DRV_HSPWM_IncreaseDuty(5,  1);
+        DRV_HSPWM_IncreaseDuty(6, -1);
+      }
+      if ((*(pad_state + 6) & (1 << 6)) == 0)
+      {
+        DRV_HSPWM_IncreaseDuty(7, -1);
+        DRV_HSPWM_IncreaseDuty(8,  1);
+      }
+      if ((*(pad_state + 6) & (1 << 7)) == 0)
+      {
+        DRV_HSPWM_IncreaseDuty(7,  1);
+        DRV_HSPWM_IncreaseDuty(8, -1);
       }
 
       j = 0;
