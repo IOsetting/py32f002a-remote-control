@@ -9,7 +9,7 @@ extern "C" {
 
 
 #if DEBUG == 0
-    #define DEBUG_PRINTF(__ARG1__, __ARG2__)    (void)(__ARG1__);(void)(__ARG2__)
+    #define DEBUG_PRINTF(...)                   (void)(0)
     #define DEBUG_PRINT_STRING(__ARG1__)        (void)(__ARG1__)
 #else
 
