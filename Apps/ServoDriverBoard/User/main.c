@@ -90,12 +90,10 @@ int main(void)
 
 void APP_Init(void)
 {
-  uint8_t i;
-
   DRV_SYS_ReadDeviceUID((uint32_t *)device_uuid, 1, 2);
 #if DEBUG == 1
   SEGGER_RTT_WriteString(0, "UUID: ");
-  for (i = 0; i < 8; i++)
+  for (uint8_t i = 0; i < 8; i++)
   {
     SEGGER_RTT_printf(0, "%02X", *(device_uuid + i));
   }
@@ -125,13 +123,24 @@ void APP_Init(void)
 */
 STATE_T APP_Pair(void)
 {
-  uint8_t i, j = 128;
+  uint8_t i, j, tx_data[8];
+  static uint8_t rotate;
 
   DRV_Wireless_TxMode();
-  DEBUG_PRINT_STRING("tx ");
-  DRV_Wireless_Tx(device_uuid);
+  DEBUG_PRINT_STRING(".");
+  /* Use j to calculate the CRC */
+  j = 0;
+  for (i = 0; i < 7; i++)
+  {
+    tx_data[i] = device_uuid[i];
+    j += device_uuid[i];
+  }
+  tx_data[7] = j;
+
+  DRV_Wireless_Tx(tx_data);
   DRV_Wireless_RxMode();
 
+  j = 128;
   while(j--)
   {
     if (DRV_Wireless_Rx(&i, pad_state) == SUCCESS)
@@ -140,6 +149,10 @@ STATE_T APP_Pair(void)
       return STATE_RUN;
     }
     LL_mDelay(1);
+  }
+  if (++rotate == 0)
+  {
+    DEBUG_PRINT_STRING("\r\n");
   }
   return STATE_PAIR;
 }
