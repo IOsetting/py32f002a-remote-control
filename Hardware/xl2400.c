@@ -87,6 +87,9 @@ ErrorStatus XL2400_SPI_Test(void)
     return SUCCESS;
 }
 
+/**
+ * Normal Mode(no ack, no retries): Set EN_AA = 0X00, SETUP_RETR = 0X00, DYNPD = 0X00, FEATURE low 3-bit = 0B000
+*/
 void XL2400_Init(void)
 {
     // Analog config
@@ -96,16 +99,16 @@ void XL2400_Init(void)
     XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_ANALOG_CFG0, xbuf, 13);
     // Switch to software CE control, wake up RF
     XL2400_WakeUp();
-    // Enable Auto ACK Pipe 0
-    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_EN_AA, 0x3F);
-    // Enable Pipe 0
-    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_EN_RXADDR, 0x3F);
+    // Turn off Auto ACK on all pipes
+    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_EN_AA, 0x00);
+    // Enable Pipe 0,1
+    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_EN_RXADDR, 0x03);
     // Address Width, 5 bytes
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_SETUP_AW, 0xAF);
     // Retries and interval
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_SETUP_RETR, 0x33);
     // RF Data Rate: 04:2Mbps, 00:1Mbps, 20:250Kbps, 24:125Kbps
-    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_RF_SETUP, 0x04);
+    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_RF_SETUP, 0x20);
     // Number of bytes in RX payload, pipe 0 and pipe 1
     *(cbuf + 0) = XL2400_PLOAD_WIDTH;
     *(cbuf + 1) = XL2400_PLOAD_WIDTH;
