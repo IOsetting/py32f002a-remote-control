@@ -9,9 +9,9 @@
 void DRV_Wireless_Init(uint8_t channel, uint8_t *rx_addr, uint8_t *tx_addr)
 {
   XL2400_Init();
-  XL2400_SetPower(XL2400_RF_0DB);
+  XL2400_SetPower(XL2400_RF_6DB);
   XL2400_SetChannel(channel);
-  XL2400_SetRxAddress(rx_addr);
+  XL2400_SetRxAddress(0, rx_addr);
   XL2400_SetTxAddress(tx_addr);
   XL2400_SetTxMode();
 }

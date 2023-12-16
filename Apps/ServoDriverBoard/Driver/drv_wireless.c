@@ -11,11 +11,21 @@ extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 void DRV_Wireless_Init(uint8_t channel, uint8_t *rx_addr, uint8_t *tx_addr)
 {
   XL2400_Init();
-  XL2400_SetPower(XL2400_RF_0DB);
+  XL2400_SetPower(XL2400_RF_6DB);
   XL2400_SetChannel(channel);
-  XL2400_SetRxAddress(rx_addr);
   XL2400_SetTxAddress(tx_addr);
+  XL2400_SetRxAddress(0, rx_addr);
   XL2400_WakeUp();
+  XL2400_SetRxMode();
+}
+
+void DRV_Wireless_TxMode(void)
+{
+  XL2400_SetTxMode();
+}
+
+void DRV_Wireless_RxMode(void)
+{
   XL2400_SetRxMode();
 }
 
@@ -29,12 +39,15 @@ uint8_t DRV_Wireless_Tx(uint8_t *data)
   return XL2400_Tx(data, XL2400_PLOAD_WIDTH);
 }
 
-ErrorStatus DRV_Wireless_Rx(uint8_t *data)
+ErrorStatus DRV_Wireless_Rx(uint8_t *pipe, uint8_t *data)
 {
   uint8_t crc, i;
 
-  if (XL2400_Rx() & XL2400_FLAG_RX_DR)
+  i = XL2400_Rx();
+  if (i & XL2400_FLAG_RX_DR)
   {
+    *pipe = (i & 0x0E) >> 1;
+
     // CRC check
     crc = 0;
     for (i = 0; i < XL2400_PLOAD_WIDTH - 1; i++)

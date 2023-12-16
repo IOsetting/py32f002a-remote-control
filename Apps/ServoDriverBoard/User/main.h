@@ -14,8 +14,7 @@ extern "C" {
 #else
 
 #include "SEGGER_RTT.h"
-
-    #define DEBUG_PRINTF(__ARG1__, __ARG2__)    SEGGER_RTT_printf(0, __ARG1__, __ARG2__);
+    #define DEBUG_PRINTF(...)                   SEGGER_RTT_printf(0, __VA_ARGS__);
     #define DEBUG_PRINT_STRING(__ARG1__)        SEGGER_RTT_WriteString(0, __ARG1__);
 #endif
 

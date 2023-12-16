@@ -125,7 +125,7 @@ void XL2400_Init(void);
 void XL2400_SetChannel(uint8_t channel);
 
 void XL2400_SetTxAddress(const uint8_t *address);
-void XL2400_SetRxAddress(const uint8_t *address);
+void XL2400_SetRxAddress(const uint8_t pipe, const uint8_t *address);
 void XL2400_SetPower(uint8_t power);
 
 void XL2400_Sleep(void);

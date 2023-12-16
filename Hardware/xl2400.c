@@ -106,8 +106,8 @@ void XL2400_Init(void)
     // Address Width, 5 bytes
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_SETUP_AW, 0xAF);
     // Retries and interval
-    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_SETUP_RETR, 0x33);
-    // RF Data Rate: 04:2Mbps, 00:1Mbps, 20:250Kbps, 24:125Kbps
+    XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_SETUP_RETR, 0x00);
+    // RF Data Rate: 08:2Mbps, 00:1Mbps, 20:250Kbps, 28:125Kbps
     XL2400_WriteReg(XL2400_CMD_W_REGISTER | XL2400_REG_RF_SETUP, 0x20);
     // Number of bytes in RX payload, pipe 0 and pipe 1
     *(cbuf + 0) = XL2400_PLOAD_WIDTH;
@@ -149,12 +149,28 @@ void XL2400_SetChannel(uint8_t channel)
 void XL2400_SetTxAddress(const uint8_t *address)
 {
     XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_TX_ADDR, address, 5);
-    XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_RX_ADDR_P0, address, 5);
 }
 
-void XL2400_SetRxAddress(const uint8_t *address)
+void XL2400_SetRxAddress(const uint8_t pipe, const uint8_t *address)
 {
-    XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_RX_ADDR_P1, address, 5);
+    switch (pipe)
+    {
+    case 0:
+        XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_RX_ADDR_P0, address, 5);
+        break;
+    case 1:
+        XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_RX_ADDR_P1, address, 5);
+        break;
+    case 2: // P2 ~ P5 only accept 1 byte for each
+    case 3:
+    case 4:
+    case 5:
+        XL2400_ReadToBuf(XL2400_CMD_R_REGISTER | XL2400_REG_RX_ADDR_P2_P5, cbuf, 4);
+        *(cbuf + (pipe - 2)) = *address;
+        XL2400_WriteFromBuf(XL2400_CMD_W_REGISTER | XL2400_REG_RX_ADDR_P2_P5, cbuf, 4);
+        break;
+    }
+
 }
 
 void XL2400_SetPower(uint8_t power)
