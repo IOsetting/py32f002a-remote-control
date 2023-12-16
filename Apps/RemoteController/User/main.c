@@ -7,6 +7,13 @@
 #include "drv_wireless.h"
 #include "74hc165.h"
 
+typedef enum
+{
+  STATE_PAIR, STATE_RUN
+} STATE_T;
+
+STATE_T SYS_STATE;
+
 // 6-channel analog data
 __IO uint16_t adc_dma_data[6];
 
@@ -24,8 +31,14 @@ uint8_t pad_state[8];
 uint8_t wireless_state[11];
 uint8_t wireless_tx = 0, wireless_tx_succ = 0;
 
+const uint8_t channel = 78;
 const uint8_t RX_ADDRESS[5] = {0x11,0x33,0x33,0x33,0x11};
-const uint8_t TX_ADDRESS[5] = {0x33,0x55,0x33,0x44,0x33};
+uint8_t tx_addr[8] = {0x11,0x22,0x33,0x44,0x55}; //063431322B
+//uint8_t tx_addr[8] = {0x06,0x34,0x31,0x32,0x2B}; //063431322B
+
+void APP_Init(void);
+STATE_T APP_Pair(void);
+STATE_T APP_Run(void);
 
 int main(void)
 {
@@ -56,6 +69,29 @@ int main(void)
   MSP_ADC_Init();
   MSP_TIM1_Init();
 
+  APP_Init();
+
+  SYS_STATE = STATE_RUN;
+  /* Infinite loop */
+  while(1)
+  {
+    switch (SYS_STATE)
+    {
+    case STATE_RUN:
+      SYS_STATE = APP_Run();
+      break;
+
+    case STATE_PAIR:
+    default:
+      SYS_STATE = APP_Pair();
+      break;
+    }
+    LL_mDelay(10);
+  }
+}
+
+void APP_Init(void)
+{
   DRV_Display_Reset();
   DRV_Display_Init();
 
@@ -66,36 +102,76 @@ int main(void)
   }
   DEBUG_PRINT_STRING(" - check passed\r\n");
 
-  DRV_Wireless_Init(78, (uint8_t *)RX_ADDRESS, (uint8_t *)TX_ADDRESS);
+  DRV_Wireless_Init(channel, (uint8_t *)RX_ADDRESS, (uint8_t *)tx_addr);
 
   wireless_state[10] = 0;
+}
 
-  /* Infinite loop */
-  while(1)
+STATE_T APP_Pair(void)
+{
+  uint8_t i, j = 128;
+  /* RX channel should be 1MHz lower than TX */
+  DRV_Wireless_RxMode(channel - 2);
+
+  DEBUG_PRINT_STRING(".");
+  while(j--)
   {
+    if (DRV_Wireless_Rx(&i, tx_addr) == SUCCESS)
+    {
 #if DEBUG == 1
-    for (uint8_t i = 0; i < 8; i++)
-    {
-      DEBUG_PRINTF("%02X ", pad_state[i]);
-    }
-    DEBUG_PRINT_STRING("\r\n");
+      DEBUG_PRINT_STRING("Data received: ");
+      for (i = 0; i < 8; i++)
+      {
+        DEBUG_PRINTF("%02X ", *(tx_addr + i));
+      }
+      DEBUG_PRINT_STRING("\r\n");
 #endif
-    DRV_Display_Update(pad_state);
-    // Send
-    wireless_tx++;
-    if (DRV_Wireless_Tx(pad_state) == 0x20)
-    {
-      wireless_tx_succ++;
+      DRV_Wireless_SetTxAddress(tx_addr);
+      DRV_Wireless_TxMode(channel);
+      DEBUG_PRINT_STRING("Enter RUN state\r\n");
+      return STATE_RUN;
     }
-    if (wireless_tx == 0xFF)
-    {
-      wireless_state[10] = wireless_tx_succ;
-      DEBUG_PRINTF("TX_SUCC: %02X\r\n", wireless_tx_succ);
-      wireless_tx = 0;
-      wireless_tx_succ = 0;
-    }
-    LL_mDelay(20);
+    LL_mDelay(1);
   }
+  return STATE_PAIR;
+}
+
+STATE_T APP_Run(void)
+{
+  static uint8_t pair_trigger_count = 0;
+
+#if DEBUG == 1
+  for (uint8_t i = 0; i < 8; i++)
+  {
+    DEBUG_PRINTF("%02X ", pad_state[i]);
+  }
+  DEBUG_PRINT_STRING("\r\n");
+#endif
+  DRV_Display_Update(pad_state);
+  // Send
+  wireless_tx++;
+  if (DRV_Wireless_Tx(pad_state) == 0x20)
+  {
+    wireless_tx_succ++;
+  }
+  if (wireless_tx == 0xFF)
+  {
+    wireless_state[10] = wireless_tx_succ;
+    DEBUG_PRINTF("TX_SUCC: %02X\r\n", wireless_tx_succ);
+    wireless_tx = 0;
+    wireless_tx_succ = 0;
+  }
+  if ((pad_state[6] & 0x48) == 0)
+  {
+    pair_trigger_count++;
+    if (pair_trigger_count > 100)
+    {
+      pair_trigger_count = 0;
+      DEBUG_PRINT_STRING("Enter PAIR state\r\n");
+      return STATE_PAIR;
+    }
+  }
+  return STATE_RUN;
 }
 
 void DMA1_Channel1_IRQHandler(void)
