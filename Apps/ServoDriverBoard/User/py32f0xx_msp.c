@@ -215,6 +215,12 @@ void MSP_TIM14_Config(void)
 
   TIM14Init.ClockDivision       = LL_TIM_CLOCKDIVISION_DIV1;
   TIM14Init.CounterMode         = LL_TIM_COUNTERMODE_UP;
+  /*
+   * MCU clock = 48,000,000, Prescaler = 8000, Autoreload = 4
+   * TIMER freq = 1500 = 48,000,000 / 8000 / 4
+   * LSPWM freq = 50 = 1500 / 30
+   * LSPWM period = 30
+  */
   TIM14Init.Prescaler           = 8000-1;
   TIM14Init.Autoreload          = (SystemCoreClock / 8000) / (LSPWM_FREQUENCY * LSPWM_PERIOD) -1;
   TIM14Init.RepetitionCounter   = 0;

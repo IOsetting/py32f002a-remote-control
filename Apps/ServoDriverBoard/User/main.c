@@ -14,8 +14,9 @@ typedef enum
   STATE_PAIR, STATE_RUN
 } STATE_T;
 
-STATE_T SYS_STATE;
+STATE_T device_state;
 
+__IO uint16_t device_idle_counter;
 /*
  * Use UID[4:11]
 */
@@ -68,20 +69,21 @@ int main(void)
 
   APP_Init();
 
-  SYS_STATE = STATE_RUN;
+  device_state = STATE_RUN;
+  device_idle_counter = 0;
 
   /* Infinite loop */
   while(1)
   {
-    switch (SYS_STATE)
+    switch (device_state)
     {
     case STATE_RUN:
-      SYS_STATE = APP_Run();
+      device_state = APP_Run();
       break;
 
     case STATE_PAIR:
     default:
-      SYS_STATE = APP_Pair();
+      device_state = APP_Pair();
       break;
     }
     LL_mDelay(3);
@@ -159,16 +161,14 @@ STATE_T APP_Pair(void)
 
 STATE_T APP_Run(void)
 {
-  static uint16_t j = 0;
   uint8_t i;
 
-  j++;
   if (DRV_Wireless_Rx(&i, pad_state) == SUCCESS)
   {
-#if DEBUG == 1
-    SEGGER_RTT_printf(0, "%03d,PIPE:%01d, %02X %02x %02x %02x %02x %02x %02X ", 
-      j, i, *pad_state, *(pad_state + 1), *(pad_state + 2), *(pad_state + 3), *(pad_state + 4), *(pad_state + 5), *(pad_state + 6));
-#endif
+    DEBUG_PRINTF("%03d,PIPE:%01d, %02X %02x %02x %02x %02x %02x %02X ", 
+      device_idle_counter, i, 
+      *pad_state, *(pad_state + 1), *(pad_state + 2), *(pad_state + 3), 
+      *(pad_state + 4), *(pad_state + 5), *(pad_state + 6));
     // Keys
     for (i = 8; i--;)
     {
@@ -231,12 +231,12 @@ STATE_T APP_Run(void)
       DRV_HSPWM_IncreaseDuty(8, -1);
     }
 
-    j = 0;
+    device_idle_counter = 0;
   }
-  // Enter Pair state after 10 seconds
-  if (j > 1000)
+  // Enter Pair state after 5 seconds, device_pair_counter is updated by TIM14
+  if (device_idle_counter > LSPWM_FREQUENCY * LSPWM_PERIOD * 5)
   {
-    j = 0;
+    device_idle_counter = 0;
     DEBUG_PRINT_STRING("Enter PAIR state\r\n");
     return STATE_PAIR;
   }

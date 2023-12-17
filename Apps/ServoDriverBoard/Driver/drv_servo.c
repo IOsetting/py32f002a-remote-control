@@ -32,10 +32,8 @@ void DRV_SERVO_AnalogConvert(uint8_t uvx, uint8_t uvy, uint8_t uvz, uint8_t *dir
     else if (-motor[i] > denominator) denominator = -motor[0];
   }
 
-#if DEBUG == 1
-  SEGGER_RTT_printf(0, "XYZ: %4d %4d %4d -> MOTOR: %4d %4d %4d %4d  DN: %4d\r\n", 
+  DEBUG_PRINTF("XYZ:%4d%4d%4d, M:%4d%4d%4d%4d, D:%4d\r\n", 
         vx, vy, vz, *motor, *(motor + 1), *(motor + 2), *(motor + 3), denominator);
-#endif
 
   // Convert to PWM channels
   for (i = 0; i < 4; i++)
@@ -62,9 +60,7 @@ void DRV_SERVO_AnalogConvert(uint8_t uvx, uint8_t uvy, uint8_t uvz, uint8_t *dir
     }
   }
 
-#if DEBUG == 1
-  SEGGER_RTT_printf(0, "pwm: %02X %02X, %02X %02X, %02X %02X, %02X %02X\r\n", 
+  DEBUG_PRINTF("PWM: %02X %02X, %02X %02X, %02X %02X, %02X %02X\r\n", 
         *pwm_channel, *(pwm_channel + 1), *(pwm_channel + 2), *(pwm_channel + 3), 
         *(pwm_channel + 4), *(pwm_channel + 5), *(pwm_channel + 6), *(pwm_channel + 7));
-#endif
 }

@@ -12,7 +12,7 @@ typedef enum
   STATE_PAIR, STATE_RUN
 } STATE_T;
 
-STATE_T SYS_STATE;
+STATE_T device_state;
 
 // 6-channel analog data
 __IO uint16_t adc_dma_data[6];
@@ -71,19 +71,19 @@ int main(void)
 
   APP_Init();
 
-  SYS_STATE = STATE_RUN;
+  device_state = STATE_RUN;
   /* Infinite loop */
   while(1)
   {
-    switch (SYS_STATE)
+    switch (device_state)
     {
     case STATE_RUN:
-      SYS_STATE = APP_Run();
+      device_state = APP_Run();
       break;
 
     case STATE_PAIR:
     default:
-      SYS_STATE = APP_Pair();
+      device_state = APP_Pair();
       break;
     }
     LL_mDelay(10);
