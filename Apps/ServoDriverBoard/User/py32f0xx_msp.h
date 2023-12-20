@@ -39,7 +39,7 @@ extern "C" {
 // SPI TxRx
 #define ST7567_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
-#ifdef USE_XL2400
+#if defined(USE_XL2400) || defined(USE_XL2400P)
 
 /***************** XL2400 *****************/
 
@@ -51,9 +51,7 @@ extern "C" {
 // SPI TxRx
 #define XL2400_SPI_TxRxByte(__DATA__)   SPI_TxRxByte(__DATA__)
 
-#endif
-
-#ifdef USE_XN297L
+#elif defined(USE_XN297L)
 
 /***************** XN297L *****************/
 

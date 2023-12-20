@@ -2,9 +2,13 @@
 #include "py32f0xx_msp.h"
 #include "string.h"
 
-#ifdef USE_XL2400
+#if defined(USE_XL2400) || defined(USE_XL2400P)
 
+#if defined(USE_XL2400)
 #include "xl2400.h"
+#elif defined(USE_XL2400P)
+#include "xl2400p.h"
+#endif
 
 extern uint8_t xbuf[XL2400_PL_WIDTH_MAX + 1];
 
@@ -81,9 +85,7 @@ ErrorStatus DRV_Wireless_Rx(uint8_t *pipe, uint8_t *data)
   }
 }
 
-#endif
-
-#ifdef USE_XN297L
+#elif defined(USE_XN297L)
 
 #include "xn297l.h"
 

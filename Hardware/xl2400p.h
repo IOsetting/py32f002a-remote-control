@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef __FW_XL2400_H__
-#define __FW_XL2400_H__
+#ifndef __FW_XL2400P_H__
+#define __FW_XL2400P_H__
 
 #include "py32f0xx_msp.h"
 
@@ -131,7 +131,7 @@ void XL2400_SetRxAddress(const uint8_t pipe, const uint8_t *address);
 void XL2400_SetPower(uint8_t power);
 
 void XL2400_Sleep(void);
-void XL2400_WakeUp(void);
+void XL2400_Reset(void);
 
 ErrorStatus XL2400_RxCalibrate(void);
 

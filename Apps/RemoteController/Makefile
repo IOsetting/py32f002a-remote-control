@@ -19,8 +19,8 @@ ENABLE_PRINTF_FLOAT	?= n
 # Programmer, jlink or pyocd
 FLASH_PROGRM	?= jlink
 # Wireless part:
-#   XL2400, XN297L
-WIRELESS_PART	?= XL2400
+#   XL2400, XL2400P, XN297L
+WIRELESS_PART	?= XL2400P
 
 ##### Toolchains #######
 
@@ -49,6 +49,8 @@ CFILES := \
 
 ifeq ($(WIRELESS_PART),XL2400)
 CFILES		+= Hardware/xl2400.c
+else ifeq ($(WIRELESS_PART),XL2400P)
+CFILES		+= Hardware/xl2400p.c
 else ifeq ($(WIRELESS_PART),XN297L)
 CFILES		+= Hardware/xn297l.c
 endif
